@@ -245,205 +245,227 @@ const TMDBIntegration = {
     }
   },
   
-  // Handle clicks on chart items
-  async handleItemClick(event) {
-    // Important: Stop event propagation immediately to prevent app closing
-    event.stopPropagation();
+  // Updated handleItemClick function with better fade timing
+async handleItemClick(event) {
+  // Important: Stop event propagation immediately to prevent app closing
+  event.stopPropagation();
+  
+  const item = event.currentTarget;
+  const id = item.getAttribute('data-id');
+  const type = item.getAttribute('data-type');
+  
+  console.log(`Clicked on ${type} with ID ${id}`);
+  
+  // Show loading state on the clicked item
+  const originalContent = item.innerHTML;
+  item.innerHTML = `
+    <div class="loading-spinner" style="margin:auto;"></div>
+  `;
+  
+  try {
+    // Create or get the modal container
+    let modalContainer = document.getElementById('tmdb-modal-container');
     
-    const item = event.currentTarget;
-    const id = item.getAttribute('data-id');
-    const type = item.getAttribute('data-type');
+    if (!modalContainer) {
+      modalContainer = document.createElement('div');
+      modalContainer.id = 'tmdb-modal-container';
+      document.body.appendChild(modalContainer);
+    }
     
-    console.log(`Clicked on ${type} with ID ${id}`);
-    
-    // Show loading state on the clicked item
-    const originalContent = item.innerHTML;
-    item.innerHTML = `
-      <div class="loading-spinner" style="margin:auto;"></div>
+    // Set up the modal with loading state, but don't show it yet
+    modalContainer.innerHTML = `
+      <div class="tmdb-modal">
+        <div class="tmdb-modal-content">
+          <div class="tmdb-modal-header">
+            <button class="tmdb-modal-close">&times;</button>
+            <h3>Loading Details...</h3>
+          </div>
+          <div class="tmdb-modal-body">
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <div>Loading anime details...</div>
+            </div>
+          </div>
+        </div>
+      </div>
     `;
     
-    try {
-      // Create or get the modal container
-      let modalContainer = document.getElementById('tmdb-modal-container');
-      
-      if (!modalContainer) {
-        modalContainer = document.createElement('div');
-        modalContainer.id = 'tmdb-modal-container';
-        document.body.appendChild(modalContainer);
+    // Set up event listeners but leave modal hidden for now
+    const closeButton = modalContainer.querySelector('.tmdb-modal-close');
+    closeButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // Stop propagation to prevent other handlers
+      this.hideModal(modalContainer);
+    });
+    
+    // Close on click outside the modal content
+    modalContainer.addEventListener('click', (e) => {
+      if (e.target === modalContainer) {
+        this.hideModal(modalContainer);
       }
-      
-      // Show loading state in modal
-      modalContainer.innerHTML = `
-        <div class="tmdb-modal">
-          <div class="tmdb-modal-content">
-            <div class="tmdb-modal-header">
-              <button class="tmdb-modal-close">&times;</button>
-              <h3>Loading Details...</h3>
-            </div>
-            <div class="tmdb-modal-body">
-              <div class="loading-container">
-                <div class="loading-spinner"></div>
-                <div>Loading anime details...</div>
+    });
+    
+    // Prepare for showing, but still invisible
+    modalContainer.style.display = 'flex';
+    modalContainer.style.opacity = '0';
+    modalContainer.classList.remove('visible');
+    
+    // Fetch the details based on the type (without showing the modal yet)
+    let details;
+    if (type === 'movie') {
+      details = await TMDBAPI.getMovieDetails(id);
+    } else if (type === 'tv') {
+      details = await TMDBAPI.getTVShowDetails(id);
+    } else {
+      throw new Error(`Unknown media type: ${type}`);
+    }
+    
+    // Restore the original content of the item
+    item.innerHTML = originalContent;
+    
+    // Add a glitch effect to the clicked item to show it's active
+    item.classList.add('glitch');
+    setTimeout(() => {
+      item.classList.remove('glitch');
+    }, 3000);
+    
+    // Create the modal content based on the details
+    const posterUrl = details.posterPath || 
+      TMDBAPI.getFallbackPosterUrl(details.title);
+    
+    // Format release date or first air date
+    const releaseDate = type === 'movie' ? details.releaseDate : details.firstAirDate;
+    const formattedDate = releaseDate ? new Date(releaseDate).toLocaleDateString() : 'N/A';
+    
+    // Build the modal HTML with modified layout
+    modalContainer.innerHTML = `
+      <div class="tmdb-modal">
+        <div class="tmdb-modal-content">
+          <div class="tmdb-modal-header">
+            <button class="tmdb-modal-close">&times;</button>
+            <h3>${details.title}</h3>
+            ${details.originalTitle !== details.title ? `<h4 class="original-title">${details.originalTitle}</h4>` : ''}
+          </div>
+          <div class="tmdb-modal-body">
+            <!-- Full-width overview and metadata section -->
+            <div class="tmdb-full-width-section">
+              <!-- Overview section -->
+              <div class="tmdb-overview">${details.overview || 'No overview available.'}</div>
+              
+              <!-- Metadata section with lighter font -->
+              <div class="tmdb-meta-full">
+                <div><strong>Rating:</strong> ${details.voteAverage?.toFixed(1) || 'N/A'}/10</div>
+                <div><strong>Release Date:</strong> ${formattedDate}</div>
+                ${type === 'movie' ? 
+                  `<div><strong>Runtime:</strong> ${details.runtime ? `${details.runtime} min` : 'N/A'}</div>` : 
+                  `<div><strong>Seasons:</strong> ${details.numberOfSeasons || 'N/A'}</div>
+                   <div><strong>Episodes:</strong> ${details.numberOfEpisodes || 'N/A'}</div>`
+                }
+                <div><strong>Genres:</strong> ${details.genres?.map(g => g.name).join(', ') || 'N/A'}</div>
               </div>
             </div>
-          </div>
-        </div>
-      `;
-      
-      // Show the modal with animation
-      this.showModal(modalContainer);
-      
-      // Add close functionality
-      const closeButton = modalContainer.querySelector('.tmdb-modal-close');
-      closeButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop propagation to prevent other handlers
-        this.hideModal(modalContainer);
-      });
-      
-      // Close on click outside the modal content
-      modalContainer.addEventListener('click', (e) => {
-        if (e.target === modalContainer) {
-          this.hideModal(modalContainer);
-        }
-      });
-      
-      // Fetch the details based on the type
-      let details;
-      if (type === 'movie') {
-        details = await TMDBAPI.getMovieDetails(id);
-      } else if (type === 'tv') {
-        details = await TMDBAPI.getTVShowDetails(id);
-      } else {
-        throw new Error(`Unknown media type: ${type}`);
-      }
-      
-      // Restore the original content of the item
-      item.innerHTML = originalContent;
-      
-      // Add a glitch effect to the clicked item to show it's active
-      item.classList.add('glitch');
-      setTimeout(() => {
-        item.classList.remove('glitch');
-      }, 3000);
-      
-      // Create the modal content based on the details
-      const posterUrl = details.posterPath || 
-        TMDBAPI.getFallbackPosterUrl(details.title);
-      
-      // Format release date or first air date
-      const releaseDate = type === 'movie' ? details.releaseDate : details.firstAirDate;
-      const formattedDate = releaseDate ? new Date(releaseDate).toLocaleDateString() : 'N/A';
-      
-      // Build the modal HTML with modified layout
-      modalContainer.innerHTML = `
-        <div class="tmdb-modal">
-          <div class="tmdb-modal-content">
-            <div class="tmdb-modal-header">
-              <button class="tmdb-modal-close">&times;</button>
-              <h3>${details.title}</h3>
-              ${details.originalTitle !== details.title ? `<h4 class="original-title">${details.originalTitle}</h4>` : ''}
-            </div>
-            <div class="tmdb-modal-body">
-              <!-- Full-width overview and metadata section -->
-              <div class="tmdb-full-width-section">
-                <!-- Overview section -->
-                <div class="tmdb-overview">${details.overview || 'No overview available.'}</div>
-                
-                <!-- Metadata section with lighter font -->
-                <div class="tmdb-meta-full">
-                  <div><strong>Rating:</strong> ${details.voteAverage?.toFixed(1) || 'N/A'}/10</div>
-                  <div><strong>Release Date:</strong> ${formattedDate}</div>
-                  ${type === 'movie' ? 
-                    `<div><strong>Runtime:</strong> ${details.runtime ? `${details.runtime} min` : 'N/A'}</div>` : 
-                    `<div><strong>Seasons:</strong> ${details.numberOfSeasons || 'N/A'}</div>
-                     <div><strong>Episodes:</strong> ${details.numberOfEpisodes || 'N/A'}</div>`
-                  }
-                  <div><strong>Genres:</strong> ${details.genres?.map(g => g.name).join(', ') || 'N/A'}</div>
-                </div>
+            
+            <!-- Side-by-side poster and trailer container -->
+            <div class="tmdb-media-container">
+              <!-- Poster container - 1/3 width -->
+              <div class="tmdb-poster-container">
+                <img src="${posterUrl}" alt="${details.title}" 
+                  onerror="this.src='${TMDBAPI.getFallbackPosterUrl(details.title)}'">
               </div>
               
-              <!-- Side-by-side poster and trailer container -->
-              <div class="tmdb-media-container">
-                <!-- Poster container - 1/3 width -->
-                <div class="tmdb-poster-container">
-                  <img src="${posterUrl}" alt="${details.title}" 
-                    onerror="this.src='${TMDBAPI.getFallbackPosterUrl(details.title)}'">
-                </div>
-                
-                <!-- Trailer container - 2/3 width -->
-                <div class="tmdb-trailer-container">
-                  ${details.trailer && details.trailer.key ? 
-                    `<div class="tmdb-trailer">
-                      <iframe 
-                        width="100%" 
-                        height="100%" 
-                        src="https://www.youtube.com/embed/${details.trailer.key}" 
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen
-                      ></iframe>
-                      <div class="tmdb-trailer-label">Trailer</div>
-                    </div>` : 
-                    `<div class="tmdb-no-trailer">
-                      <div class="tmdb-no-trailer-content">
-                        <div class="tmdb-no-trailer-icon">¯\\_(ツ)_/¯</div>
-                        <div class="tmdb-no-trailer-text">No trailer available for this title</div>
-                      </div>
-                    </div>`
-                  }
-                </div>
-              </div>
-            </div>
-            <div class="tmdb-modal-footer">
-              <div class="tmdb-attribution">
-                Data provided by <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">The Movie Database</a>
+              <!-- Trailer container - 2/3 width -->
+              <div class="tmdb-trailer-container">
+                ${details.trailer && details.trailer.key ? 
+                  `<div class="tmdb-trailer">
+                    <iframe 
+                      width="100%" 
+                      height="100%" 
+                      src="https://www.youtube.com/embed/${details.trailer.key}" 
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                      allowfullscreen
+                    ></iframe>
+                    <div class="tmdb-trailer-label">Trailer</div>
+                  </div>` : 
+                  `<div class="tmdb-no-trailer">
+                    <div class="tmdb-no-trailer-content">
+                      <div class="tmdb-no-trailer-icon">¯\\_(ツ)_/¯</div>
+                      <div class="tmdb-no-trailer-text">No trailer available for this title</div>
+                    </div>
+                  </div>`
+                }
               </div>
             </div>
           </div>
-        </div>
-      `;
-      
-      // Re-add close functionality with animation
-      const updatedCloseButton = modalContainer.querySelector('.tmdb-modal-close');
-      updatedCloseButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop propagation to prevent other handlers
-        this.hideModal(modalContainer);
-      });
-      
-      // Re-add click outside to close with animation
-      modalContainer.addEventListener('click', (e) => {
-        if (e.target === modalContainer) {
-          this.hideModal(modalContainer);
-        }
-      });
-      
-      // Add escape key to close with animation
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modalContainer.style.display === 'flex') {
-          this.hideModal(modalContainer);
-        }
-      });
-    } catch (error) {
-      console.error(`Error showing details for ${type} ${id}:`, error);
-      
-      // Restore the original content of the item
-      item.innerHTML = originalContent;
-      
-      // Show error in modal
-      const modalContainer = document.getElementById('tmdb-modal-container');
-      if (modalContainer) {
-        const modalBody = modalContainer.querySelector('.tmdb-modal-body');
-        if (modalBody) {
-          modalBody.innerHTML = `
-            <div class="error-message">
-              <p>Sorry, there was an error loading the details.</p>
-              <p>Error: ${error.message}</p>
+          <div class="tmdb-modal-footer">
+            <div class="tmdb-attribution">
+              Data provided by <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">The Movie Database</a>
             </div>
-          `;
-        }
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Re-add close functionality with animation
+    const updatedCloseButton = modalContainer.querySelector('.tmdb-modal-close');
+    updatedCloseButton.addEventListener('click', (e) => {
+      e.stopPropagation(); // Stop propagation to prevent other handlers
+      this.hideModal(modalContainer);
+    });
+    
+    // Re-add click outside to close with animation
+    modalContainer.addEventListener('click', (e) => {
+      if (e.target === modalContainer) {
+        this.hideModal(modalContainer);
       }
+    });
+    
+    // Add escape key to close with animation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modalContainer.style.display === 'flex') {
+        this.hideModal(modalContainer);
+      }
+    });
+    
+    // Now that everything is ready, make the modal visible with animation
+    // Small delay to ensure DOM updates are complete
+    setTimeout(() => {
+      this.showModal(modalContainer);
+    }, 50); // Short delay to ensure content is rendered
+    
+  } catch (error) {
+    console.error(`Error showing details for ${type} ${id}:`, error);
+    
+    // Restore the original content of the item
+    item.innerHTML = originalContent;
+    
+    // Show error in modal if it exists
+    const modalContainer = document.getElementById('tmdb-modal-container');
+    if (modalContainer) {
+      // Show the modal first if it's not already visible
+      if (modalContainer.style.display !== 'flex') {
+        modalContainer.style.display = 'flex';
+        modalContainer.style.opacity = '0';
+        modalContainer.classList.remove('visible');
+      }
+      
+      // Update with error content
+      const modalBody = modalContainer.querySelector('.tmdb-modal-body');
+      if (modalBody) {
+        modalBody.innerHTML = `
+          <div class="error-message">
+            <p>Sorry, there was an error loading the details.</p>
+            <p>Error: ${error.message}</p>
+          </div>
+        `;
+      }
+      
+      // Now show the modal with error
+      setTimeout(() => {
+        this.showModal(modalContainer);
+      }, 50);
     }
-  },
+  }
+},
   
   // Refresh movie data
   async refreshMovies() {

@@ -52,6 +52,30 @@ const TMDBIntegration = {
     console.log("TMDB styles loaded");
   },
   
+  // Helper functions for modal animations
+  showModal(modalContainer) {
+    // First make it visible but with opacity 0
+    modalContainer.style.display = 'flex';
+    
+    // Force a reflow before applying the transition
+    void modalContainer.offsetWidth;
+    
+    // Then fade it in
+    modalContainer.style.opacity = '1';
+    modalContainer.classList.add('visible');
+  },
+  
+  hideModal(modalContainer) {
+    // First fade it out
+    modalContainer.style.opacity = '0';
+    modalContainer.classList.remove('visible');
+    
+    // After transition completes, hide it
+    setTimeout(() => {
+      modalContainer.style.display = 'none';
+    }, 800); // Same as the CSS transition duration
+  },
+  
   // Set up event listeners for the application
   setupEventListeners() {
     // Listen for app selection events
@@ -202,12 +226,7 @@ const TMDBIntegration = {
       
       // Add click handlers for detailed view
       contentDiv.querySelectorAll('.media-chart-item').forEach(item => {
-        item.addEventListener('click', (e) => {
-          // Immediately stop propagation to prevent app closing
-          e.stopPropagation();
-          // Then handle the item click
-          this.handleItemClick(e);
-        });
+        item.addEventListener('click', this.handleItemClick.bind(this));
       });
       
       console.log("Anime content loaded successfully");
@@ -219,7 +238,7 @@ const TMDBIntegration = {
         <div class="error-message">
           <p>Sorry, there was an error loading anime data.</p>
           <p>Error: ${error.message}</p>
-          <button class="tmdb-refresh-button" style="position:static; transform:none; margin-top:10px;"
+          <button class="tmdb-refresh-button" style="position:static; transform:none; margin-top:10px;" 
             onclick="event.stopPropagation(); window.TMDBIntegration.loadAnimeContent()">Try Again</button>
         </div>
       `;
@@ -228,7 +247,7 @@ const TMDBIntegration = {
   
   // Handle clicks on chart items
   async handleItemClick(event) {
-    // Stop propagation immediately to prevent app closing
+    // Important: Stop event propagation immediately to prevent app closing
     event.stopPropagation();
     
     const item = event.currentTarget;
@@ -271,21 +290,20 @@ const TMDBIntegration = {
         </div>
       `;
       
-      // Show the modal
-      modalContainer.style.display = 'flex';
+      // Show the modal with animation
+      this.showModal(modalContainer);
       
       // Add close functionality
       const closeButton = modalContainer.querySelector('.tmdb-modal-close');
       closeButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop propagation immediately
-        modalContainer.style.display = 'none';
+        e.stopPropagation(); // Stop propagation to prevent other handlers
+        this.hideModal(modalContainer);
       });
       
       // Close on click outside the modal content
       modalContainer.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop propagation immediately
         if (e.target === modalContainer) {
-          modalContainer.style.display = 'none';
+          this.hideModal(modalContainer);
         }
       });
       
@@ -385,25 +403,24 @@ const TMDBIntegration = {
         </div>
       `;
       
-      // Re-add close functionality
+      // Re-add close functionality with animation
       const updatedCloseButton = modalContainer.querySelector('.tmdb-modal-close');
       updatedCloseButton.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop propagation immediately
-        modalContainer.style.display = 'none';
+        e.stopPropagation(); // Stop propagation to prevent other handlers
+        this.hideModal(modalContainer);
       });
       
-      // Re-add click outside to close
+      // Re-add click outside to close with animation
       modalContainer.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop propagation immediately
         if (e.target === modalContainer) {
-          modalContainer.style.display = 'none';
+          this.hideModal(modalContainer);
         }
       });
       
-      // Add escape key to close
+      // Add escape key to close with animation
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && modalContainer.style.display === 'flex') {
-          modalContainer.style.display = 'none';
+          this.hideModal(modalContainer);
         }
       });
     } catch (error) {

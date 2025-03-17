@@ -8,7 +8,7 @@
     color: white;
     padding: 15px;
     width: 300px;
-    max-height: 400px;
+    max-height: 600px; /* Increased to 150% of original 400px */
     overflow-y: auto;
     opacity: 0;
     visibility: hidden;

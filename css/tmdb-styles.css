@@ -138,7 +138,7 @@
   text-decoration: underline;
 }
 
-/* Modal styles with cyberpunk theme */
+/* Modal styles with cyberpunk theme and animations */
 #tmdb-modal-container {
   display: none;
   position: fixed;
@@ -151,8 +151,11 @@
   justify-content: center;
   align-items: center;
   backdrop-filter: blur(3px);
+  opacity: 0; /* Start with opacity 0 */
+  transition: opacity 0.8s ease-out; /* Add transition for opacity */
 }
 
+/* Modal itself also gets transition */
 .tmdb-modal {
   width: 90%;
   max-width: 800px;
@@ -163,6 +166,13 @@
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 0, 0.1) inset;
   animation: modal-glow 5s infinite alternate;
+  transform: scale(0.95); /* Start slightly smaller */
+  transition: transform 0.8s cubic-bezier(0.2, 1.1, 0.3, 1); /* Add nice easing */
+}
+
+/* Class for visible state */
+#tmdb-modal-container.visible .tmdb-modal {
+  transform: scale(1); /* Scale to full size when visible */
 }
 
 @keyframes modal-glow {

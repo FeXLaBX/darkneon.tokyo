@@ -92,7 +92,7 @@ export const DebugTools = {
         border-left: 1px solid var(--matrix-green);
         font-family: 'Courier New', monospace;
         font-size: 12px;
-        z-index: 10000;
+        z-index: 5000;
         overflow-y: auto;
         transform: translateX(300px);
         transition: transform 0.3s ease;

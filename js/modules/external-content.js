@@ -541,7 +541,7 @@ function addMovieTVChartsStyles() {
       width: 100%;
       height: 100%;
       background-color: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
+      z-index: 500;
       justify-content: center;
       align-items: center;
     }

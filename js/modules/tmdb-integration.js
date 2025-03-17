@@ -70,6 +70,16 @@ const TMDBIntegration = {
     modalContainer.style.opacity = '0';
     modalContainer.classList.remove('visible');
     
+    // Stop any playing video by targeting the iframe
+    const iframe = modalContainer.querySelector('iframe');
+    if (iframe) {
+      // Set the src to empty to stop the video
+      const originalSrc = iframe.src;
+      iframe.src = '';
+      // Store the original source for potential future use
+      iframe.dataset.originalSrc = originalSrc;
+    }
+    
     // After transition completes, hide it
     setTimeout(() => {
       modalContainer.style.display = 'none';

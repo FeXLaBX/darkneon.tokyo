@@ -147,7 +147,7 @@
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.85);
-  z-index: 9999 !important; /* Higher z-index to be above everything */
+  z-index: 5000 !important; /* Higher z-index to be above everything */
   justify-content: center;
   align-items: center;
   backdrop-filter: blur(3px);

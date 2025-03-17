@@ -109,7 +109,7 @@ export const LoadingIndicator = {
             border-radius: 4px;
             display: flex;
             align-items: center;
-            z-index: 1000;
+            z-index: 500;
             font-family: 'Courier New', monospace;
             font-size: 14px;
             display: none;

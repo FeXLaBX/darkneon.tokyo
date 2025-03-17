@@ -185,26 +185,28 @@ body.expanding .wallpaper-outer-glow {
     position: fixed;
     inset: 0;
     background: black;
-    z-index: 30;
+    z-index: 9999; /* Ensure it's above everything else */
     display: flex;
     justify-content: center;
     align-items: center;
     opacity: 0;
     visibility: hidden;
     transition: none;
+    pointer-events: none; /* Prevent it from blocking other elements */
 }
 
 .transition-overlay.visible {
     opacity: 1;
-    visibility: visible;
+    visibility: visible !important; /* Force visibility */
 }
 
 .transition-overlay img {
     position: absolute;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain; /* Changed to contain to preserve aspect ratio */
     object-position: center;
+    z-index: 10000; /* Ensure image is above the overlay */
 }
 
 /* Optional: Add a glitch effect to enhance the error feeling */

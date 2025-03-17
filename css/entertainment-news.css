@@ -1,0 +1,171 @@
+/* entertainment-news.css - Styles for RSS news feeds */
+
+/* Round button styling */
+.rotate-source-btn-round {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
+    vertical-align: middle;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    position: absolute;
+    right: 10px;
+    transform: translateY(+5%); /* Adjusted to better match text height */
+  }
+  
+  .rotate-source-btn-round:hover {
+    background: rgba(0, 255, 0, 0.2);
+    transform: rotate(30deg);
+  }
+  
+  .rotate-source-btn-round:active {
+    background: rgba(0, 255, 0, 0.3);
+  }
+  
+  .rotate-source-btn-round:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .rotate-source-btn-round.loading {
+    opacity: 0.8;
+  }
+  
+  /* Make sure the content-box-header has positioning for the button */
+  .content-box-header {
+    position: relative;
+  }
+  
+  /* Source indicator styling */
+  .news-source-indicator {
+    font-size: 0.8em;
+    color: var(--matrix-green);
+    margin-top: -15px;
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .news-source-count {
+    color: rgba(0, 255, 0, 0.7);
+    font-size: 0.85em;
+  }
+  
+  /* Loading spinner styles */
+  .loading-spinner-small {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(0, 255, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--matrix-green);
+    animation: spin 1s linear infinite;
+  }
+  
+  /* News item styling */
+  .real-news {
+    border-left: 3px solid var(--matrix-green);
+    position: relative;
+  }
+  
+  .real-news::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--matrix-green);
+    margin: 5px;
+  }
+  
+  .news-item {
+    transition: background-color 0.3s ease;
+    padding: 8px;
+    margin-bottom: 15px;
+  }
+  
+  .news-item:hover {
+    background-color: rgba(0, 255, 0, 0.05);
+  }
+  
+  .news-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    line-height: 1.3;
+  }
+  
+  .news-description {
+    font-size: 0.9em;
+    line-height: 1.4;
+    margin-bottom: 5px;
+    overflow: hidden;
+    
+    /* WebKit approach (widely supported) */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    
+    /* Standard properties for future compatibility */
+    display: box;
+    line-clamp: 2;
+    box-orient: vertical;
+    
+    /* Fallback for browsers that don't support line-clamp */
+    max-height: 2.8em; /* 2 lines × line-height */
+  }
+  
+  .news-source {
+    font-size: 0.8em;
+    opacity: 0.8;
+  }
+  
+  .news-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    margin-bottom: 15px;
+  }
+  
+  .news-link:hover .news-item {
+    background-color: rgba(0, 255, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 255, 0, 0.2);
+  }
+  
+  .news-link:hover .news-title {
+    color: var(--matrix-green);
+  }
+  
+  .news-item-container {
+    margin-bottom: 15px;
+  }
+  
+  /* Adjust item margins since they're now inside containers */
+  .news-link .news-item,
+  .news-item-container .news-item {
+    margin-bottom: 0;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .fallback-note {
+    color: #ffaa00;
+    font-style: italic;
+    font-size: 0.5em;
+  }

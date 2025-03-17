@@ -1,0 +1,327 @@
+/* Enhanced main page styles */
+.main-page {
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 2s ease-out, visibility 0s 2s; /* Reduced transition time */
+    overflow: hidden;
+}
+
+.main-page.visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 2s ease-out, visibility 0s; /* Reduced transition time */
+}
+
+/* TV Static effect */
+.tv-static {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 50; /* Explicit z-index */
+    opacity: 0.4;
+    transition: opacity 1.0s ease-in-out;
+    pointer-events: none; /* Important - ensure it doesn't capture clicks */
+}
+
+/* Background images */
+.main-background,
+.app-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 2;
+    opacity: 0.15; /* Very low opacity as requested */
+    transition: opacity 1s ease-in-out;
+    pointer-events: none; /* Ensure backgrounds don't capture clicks */
+}
+
+.main-background {
+    background: url('../images/Darkneon.tokyo.main.webp') no-repeat center center/cover;
+    opacity: 0.15;
+}
+
+.app-background {
+    opacity: 0;
+}
+
+.jellyfin-bg {
+    background: url('../images/jellyfin_bg.png') no-repeat center center/cover;
+}
+
+.kavita-bg {
+    background: url('../images/kavita_bg.jpg') no-repeat center center/cover;
+}
+
+.romm-bg {
+    background: url('../images/romm_bg.jpg') no-repeat center center/cover;
+}
+
+/* Active background handling */
+.app-background.active {
+    opacity: 0.15;
+}
+
+/* Logo container */
+.logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+    z-index: 10; /* Higher z-index to ensure logos are above other elements */
+    position: relative;
+    pointer-events: auto; /* Ensure it captures mouse events */
+}
+
+/* Clone container for active logos */
+.logo-clone-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4rem;
+    z-index: 20; /* Higher than everything else */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Let clicks pass through to elements below */
+}
+
+/* Clone groups - containers for logo clones and their detail boxes */
+.clone-group {
+    position: relative;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--jellyfin-move-duration) var(--jellyfin-ease);
+    pointer-events: none; /* Let clicks pass through by default */
+}
+
+/* Active clone group state */
+.clone-group.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-25vh); /* Default transform */
+    pointer-events: auto; /* Capture clicks when active */
+}
+
+/* Custom positions for clone groups */
+.jellyfin-group.active {
+    transform: translateY(-18vh);
+}
+
+.kavita-group.active {
+    transform: translateY(-32vh);
+}
+
+.romm-group.active {
+    transform: translateY(-45vh);
+}
+
+/* Detail boxes within clone groups */
+.clone-group .app-detail {
+    position: absolute;
+    z-index: 5; /* Below the logo clone but above other elements */
+    pointer-events: auto; /* Ensure clicks are captured */
+}
+
+/* Logo clones */
+.logo-clone {
+    position: relative;
+    transition: all var(--jellyfin-move-duration) var(--jellyfin-ease);
+    z-index: 25;
+}
+
+/* Active clone state */
+.logo-clone.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Individual active states for app details - maintaining specific styling without fixed positioning */
+.jellyfin-detail.active {
+    /* Custom active styles for Jellyfin details */
+    padding-top: 50px;  /* Thicker border when active */
+}
+
+.kavita-detail.active {
+    /* Custom active styles for Kavita details */
+    padding-top: 50px;  /* Specific styling */
+}
+
+.romm-detail.active {
+    /* Custom active styles for Romm details */
+    padding-top: 50px;  /* Specific styling */
+}
+
+.logo-clone .logo-img {
+    max-width: 200px;
+    height: auto;
+    transition: all var(--jellyfin-move-duration) var(--jellyfin-ease);
+}
+
+.logo-clone.active .logo-img {
+    transform: scale(2.7); /* Same as original active logo */
+}
+
+/* Base logo styles */
+.logo {
+    position: relative;
+    transition: all var(--jellyfin-move-duration) var(--jellyfin-ease),opacity var(--logo-fade-duration) ease-out;;
+    z-index: 11; /* Higher than logo-container when inactive */
+    pointer-events: auto; /* Ensure it captures mouse events */
+    cursor: pointer; /* Show pointer cursor on the logo itself */
+}
+
+.logo:hover .logo-img {
+    transform: scale(1.1); /* Scale to 1.1 on hover */
+}
+
+.logo-img {
+    max-width: 200px;
+    height: auto;
+    transition: all var(--jellyfin-move-duration) var(--jellyfin-ease);
+}
+
+/* Individual basic states */
+
+.jellyfin-logo {
+    /* Custom position for Jellyfin logo */
+    transform: translateX(0px);  /* Move */
+}
+
+.kavita-logo {
+    /* Custom position for Kavita logo */
+    transform: translateX(0px);   /* Logos */
+}
+
+.romm-logo {
+    /* Custom position for Romm logo */
+    transform: translateX(0px);   /* on X-axis if needed */
+}
+
+/* App details - common styles */
+.app-detail {
+    position: absolute;
+    /* Removing fixed top positioning, will be set by JavaScript */
+    left: 50%;
+    transform: translateX(-50%) translateY(100vh);
+    width: 600px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--matrix-green);
+    padding: 20px;
+    color: white;
+    z-index: 10; /* Below active logos (z-index: 10) but above inactive ones */
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--jellyfin-move-duration) var(--jellyfin-ease);
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertical centering */
+    align-items: center; /* Horizontal centering */
+    text-align: center;
+    padding-top: 46px;
+}
+
+/* App details within clone groups */
+.clone-group .app-detail {
+    position: absolute;
+    /* Position is set in JavaScript relative to the clone */
+    z-index: 5; /* Below the logo clone but above other elements */
+    pointer-events: auto; /* Ensure clicks are captured */
+}
+
+/* Active states - common */
+.app-detail.active {
+    opacity: 0;
+    animation: fadeInDetails 1s ease-out 0.3s forwards;
+    visibility: visible;
+    transition: all var(--jellyfin-move-duration) var(--jellyfin-ease);
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Fading out state */
+.app-detail.fading-out {
+    animation: fadeOutDetails 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards; /* Standard ease-in-out for smoother animation */
+    visibility: visible;
+    transition: none; /* Disable transition to avoid conflicts with animation */
+    /* Starting position maintained by the animation */
+    will-change: opacity, visibility, transform; /* Performance optimization */
+    transform-origin: top center; /* Ensure transform originates from top */
+}
+
+@keyframes fadeInDetails {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeOutDetails {
+    0% {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+    }
+    20% { /* Add an early keyframe to ensure smoother start */
+        opacity: 0.8;
+        visibility: visible;
+        transform: translateX(-50%) translateY(-5vh);
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-50%) translateY(-100vh); /* Move upward off-screen */
+    }
+}
+
+/* Active states for app details within clone groups */
+.clone-group.active .app-detail {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* App button */
+.app-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: rgba(0, 255, 0, 0.2);
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    transition: background-color 0.3s;
+}
+
+.app-button:hover {
+    background: rgba(0, 255, 0, 0.3);
+}
+
+/* Special handling for Jellyfin description - hide it by default */
+.jellyfin-detail .app-description.jellyfin-placeholder {
+    display: none;
+}
+
+/* Adjust detail content layout for Jellyfin */
+.jellyfin-detail .detail-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Make button stay at bottom for Jellyfin */
+.jellyfin-detail .app-button {
+    margin-top: auto;
+}

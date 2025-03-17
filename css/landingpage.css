@@ -1,0 +1,235 @@
+:root {
+    --matrix-green: #00ff00;
+}
+
+/* Base styles */
+body {
+    margin: 0;
+    height: 100vh;
+    background: black;
+    overflow: hidden;
+}
+
+/* Wallpaper and container styles */
+.wallpaper-container {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+}
+
+.wallpaper,
+.wallpaper-glow,
+.wallpaper-outer-glow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.wallpaper {
+    background: url('../images/Darkneon.tokyo.webp') no-repeat center center/cover;
+    z-index: 2;
+}
+
+.wallpaper-glow {
+    background: url('../images/Darkneon.tokyo.webp') no-repeat center center/cover;
+    filter: blur(20px) brightness(1.5);
+    z-index: 1;
+}
+
+.wallpaper-outer-glow {
+    background: rgba(255, 255, 0, 0.3);
+    filter: blur(30px) brightness(1.2);
+    z-index: 0;
+}
+
+/* Glow layer styles */
+/* Base styles for both glow layers */
+.glow-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: screen;
+}
+
+/* Primary glow - outer ring */
+.glow-primary {
+    background: radial-gradient(
+        circle 200px at var(--x, 50%) var(--y, 50%),
+        transparent 70%,
+        rgba(255, 255, 0, 0.10) 90%,
+        transparent 100%
+    );
+    filter: blur(15px);
+    z-index: 15;
+}
+
+/* Secondary glow - inner ring */
+.glow-secondary {
+    background: radial-gradient(
+        circle 260px at var(--x, 50%) var(--y, 50%),
+        transparent 60%,
+        rgba(255, 200, 0, 0.05) 80%,
+        transparent 100%
+    );
+    filter: blur(20px);
+    z-index: 16;
+}
+
+/* Mask overlay styles */
+.mask-overlay {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle 200px at var(--x, 50%) var(--y, 50%),
+                transparent 0%,
+                black 100%);
+    transform-origin: var(--x, 50%) var(--y, 50%);
+    transform: scale(1);
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Expansion states */
+body.expanding .glow-layer,
+body.expanding .wallpaper-glow,
+body.expanding .wallpaper-outer-glow {
+    opacity: 0;
+}
+
+/* Matrix Authentication styles */
+.auth-container {
+    position: fixed;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    opacity: 0;
+    visibility: hidden;
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+}
+
+.auth-container.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Matrix text styling */
+.matrix-text {
+    color: var(--matrix-green);
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px var(--matrix-green), 2px 2px 4px black, -2px -2px 4px black, 2px -2px 4px black, -2px 2px 4px black;
+}
+
+.matrix-heading, .matrix-subtext {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    visibility: hidden;
+    margin: 0 auto;
+    width: 0;
+    font-weight: bold;
+    margin-bottom: 2rem;
+}
+
+.matrix-heading {
+    font-size: 2rem;
+}
+
+.matrix-subtext {
+    font-size: 1.2rem;
+}
+
+/* Form styles */
+.auth-form.visible {
+    opacity: 1;
+}
+
+.auth-input {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    width: 100%;
+    font-family: 'Courier New', monospace;
+}
+
+.auth-input::placeholder {
+    color: rgba(0, 255, 0, 0.5);
+}
+
+.auth-button {
+    background: rgba(0, 255, 0, 0.2);
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    padding: 0.5rem 2rem;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.auth-button.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.auth-button:hover {
+    background: rgba(0, 255, 0, 0.3);
+}
+
+/* Transition overlay styles */
+.transition-overlay {
+    position: fixed;
+    inset: 0;
+    background: black;
+    z-index: 30;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: none;
+}
+
+.transition-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.transition-overlay img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Optional: Add a glitch effect to enhance the error feeling */
+@keyframes glitch {
+    0% { transform: translate(0) }
+    20% { transform: translate(-5px, 5px) }
+    40% { transform: translate(-5px, -5px) }
+    60% { transform: translate(5px, 5px) }
+    80% { transform: translate(5px, -5px) }
+    100% { transform: translate(0) }
+}
+
+.transition-overlay.visible img {
+    animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+}
+
+/* Ensure no flashing during transitions */
+body.transitioning .wallpaper-container,
+body.transitioning .auth-container {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    transition: none !important;
+}
+
+/* Make sure transition overlay is always on top */
+.transition-overlay {
+    z-index: 100;
+}

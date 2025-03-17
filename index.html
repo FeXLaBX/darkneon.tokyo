@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DARKNEON.TOKYO</title>
+    
+    <!-- CSS Files - Grouped by functionality -->
+    <!-- Base styles -->
+    <link rel="stylesheet" href="css/landingpage.css">
+    <link rel="stylesheet" href="css/animations.css">
+    
+    <!-- Main app styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/content.css">
+    <link rel="stylesheet" href="css/tmdb-styles.css">
+
+    
+    <!-- Utility styles -->
+    <link rel="stylesheet" href="css/version-info.css">
+    <link rel="stylesheet" href="css/config-menu.css">
+</head>
+<body>
+    <!-- Landing Page Elements -->
+    <div class="wallpaper-container">
+        <div class="wallpaper-outer-glow"></div>
+        <div class="wallpaper-glow"></div>
+        <div class="wallpaper"></div>
+        <div class="glow-layer glow-primary"></div>
+        <div class="glow-layer glow-secondary"></div>
+        <div class="mask-overlay"></div>
+    </div>
+    
+    <div class="auth-container">
+        <h1 class="matrix-text matrix-heading">Welcome to darkneon.tokyo</h1>
+        <p class="matrix-text matrix-subtext">To enter BoFexLab please type in your password:</p>
+        <form class="auth-form">
+            <input type="text" class="auth-input" placeholder="Username" id="username">
+            <input type="password" class="auth-input" placeholder="Password" id="password">
+            <button type="submit" class="auth-button" id="enterButton">ENTER</button>
+        </form>
+    </div>
+    
+    <div class="transition-overlay">
+        <img src="images/transition.gif" alt="Transition">
+    </div>
+
+    <!-- Main Application Elements -->
+    <div class="main-page">
+        <!-- Effects -->
+        <img src="images/TV-static.gif" alt="TV Static" class="tv-static">
+        
+        <!-- Background Elements -->
+        <div class="main-background"></div>
+        <div class="app-background jellyfin-bg"></div>
+        <div class="app-background kavita-bg"></div>
+        <div class="app-background romm-bg"></div>
+        
+        <!-- Logo Container - Main Navigation -->
+        <div class="logo-container">
+            <div class="logo jellyfin-logo" data-app="jellyfin">
+                <img src="images/jellyfin_logo.png" alt="Jellyfin" class="logo-img">
+            </div>
+            <div class="logo kavita-logo" data-app="kavita">
+                <img src="images/kavita_logo.png" alt="Kavita" class="logo-img">
+            </div>
+            <div class="logo romm-logo" data-app="romm">
+                <img src="images/romm_logo.png" alt="Romm" class="logo-img">
+            </div>
+        </div>
+        
+        <!-- Clone container for active logos -->
+        <div class="logo-clone-container">
+            <!-- Clones will be created by JavaScript -->
+        </div>
+        
+        <!-- App Detail Containers -->
+        <div class="app-detail jellyfin-detail" data-app="jellyfin">
+            <div class="detail-content">
+                <p class="app-description"></p>
+                <a href="https://jellyfin.darkneon.tokyo" class="app-button">Launch Jellyfin</a>
+            </div>
+        </div>
+
+        <div class="app-detail kavita-detail" data-app="kavita">
+            <div class="detail-content">
+                <p class="app-description"></p>
+                <a href="https://kavita.darkneon.tokyo" class="app-button">Launch Kavita</a>
+            </div>
+        </div>
+
+        <div class="app-detail romm-detail" data-app="romm">
+            <div class="detail-content">
+                <p class="app-description"></p>
+                <a href="#" class="app-button">Launch Romm (Coming Soon)</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configuration UI -->
+    <div class="config-button" id="configButton">CONFIG</div>
+    <div class="config-menu" id="configMenu">
+        <h3 class="config-title">SYSTEM CONFIGURATION</h3>
+        <div class="config-option">
+            <div class="config-label">
+                <span>Disable Transition</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="transitionToggle" checked>
+                    <span class="toggle-slider round"></span>
+                </label>
+            </div>
+        </div>
+        <div class="config-option">
+            <div class="config-label">
+                <span>TV Static Effect</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="staticToggle" checked>
+                    <span class="toggle-slider round"></span>
+                </label>
+            </div>
+        </div>
+        <div class="config-option">
+            <div class="config-label">
+                <span>TV Static Opacity</span>
+                <input type="range" id="staticOpacity" min="0" max="100" value="40" class="opacity-slider">
+            </div>
+        </div>
+        <div class="config-option">
+            <div class="config-label">
+                <span>Session Timeout (mins)</span>
+                <input type="number" id="sessionTimeout" min="1" max="1440" value="30" style="width: 60px; background: rgba(0, 0, 0, 0.6); color: var(--matrix-green); border: 1px solid var(--matrix-green);">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Audio Elements --> 
+    <audio id="error-sound" preload="auto" style="display: none;">
+        <source src="sounds/error.mp3" type="audio/mpeg">
+        <source src="sounds/error.ogg" type="audio/ogg">
+    </audio>
+    
+    <!-- JavaScript Files - Ordered by dependency -->
+    <!-- Core landing page functionality -->
+    <script src="js/landingpage.js"></script>
+    
+    <!-- Audio initialization script -->
+    <script>
+        // Initialize audio on page load - ensures it's ready when needed
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the audio element
+            const errorSound = document.getElementById('error-sound');
+            
+            // Initialize it (no play yet - just load it)
+            if (errorSound) {
+                errorSound.load();
+                console.log("Audio preloaded");
+            }
+            
+            // Enable sound on first user interaction (clicks the "flashlight" area)
+            document.body.addEventListener('click', function() {
+                // This "silent" play attempt tells the browser the user has interacted
+                if (errorSound && errorSound.paused) {
+                    errorSound.volume = 0;
+                    errorSound.play().then(() => {
+                        errorSound.pause();
+                        errorSound.currentTime = 0;
+                        errorSound.volume = 1;
+                        console.log("Audio initialized after user interaction");
+                    }).catch(e => {
+                        console.log("Initial audio play failed, but that's okay:", e);
+                    });
+                }
+            }, {once: true}); // Only need to do this once
+        });
+    </script>
+    
+    <!-- Main application scripts -->
+    <script type="module" src="js/modules/mainpage-core.js"></script>
+
+    <script type="module" src="js/modules/entertainment-news.js"></script>
+    <!-- Additional functionality -->
+    <script type="module" src="js/modules/content-core.js"></script>
+    <script src="js/version-info.js"></script>
+    <script src="js/config-menu.js"></script>
+</body>
+</html>

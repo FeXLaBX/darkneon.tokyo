@@ -1,0 +1,1 @@
+Kavita is a fast, feature-rich, cross-platform reading server. Focused on manga and comics, it makes managing your library and reading on any device a breeze. With its elegant interface and powerful organization tools, your digital collection has never been more accessible.

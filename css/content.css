@@ -1,0 +1,440 @@
+/* content.css - Dynamic content styles for the main page */
+
+/* Common styles for content boxes */
+.content-box {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--matrix-green);
+    color: white;
+    padding: 15px;
+    width: 300px;
+    max-height: 400px;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 10;
+    transition: all var(--jellyfin-move-duration) var(--jellyfin-ease);
+}
+
+/* Positioning for the content boxes */
+.content-box-left {
+    right: calc(50% + 350px); /* Position to the left of the app detail */
+    top: 50%;
+    transform: translateY(-50%) translateX(100px);
+}
+
+.content-box-right {
+    left: calc(50% + 350px); /* Position to the right of the app detail */
+    top: 50%;
+    transform: translateY(-50%) translateX(-100px);
+}
+
+.content-box-bottom {
+    left: 50%;
+    top: calc(50% + 350px); /* Adjusted position */
+    transform: translateX(-50%) translateY(800px);
+    width: 600px;
+    max-height: 300px;
+    height: 300px;
+}
+
+/* Active state for content boxes */
+.content-box.active {
+    opacity: 0;
+    visibility: visible;
+    animation: fadeInContent 0.8s ease-out 0.6s forwards;
+}
+
+/* Left box active */
+.content-box-left.active {
+    transform: translateY(-25%) translateX(0);
+}
+
+/* Right box active */
+.content-box-right.active {
+    transform: translateY(-25%) translateX(0);
+}
+
+/* Bottom box active */
+.content-box-bottom.active {
+    transform: translateX(-50%) translateY(100px);
+}
+
+/* Fading out state for content boxes */
+.content-box.fading-out {
+    animation: fadeOutContent 1s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    visibility: visible;
+}
+
+/* Animations for content boxes */
+@keyframes fadeInContent {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeOutContent {
+    0% {
+        opacity: 1;
+        visibility: visible;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+
+/* Fade directions for different boxes */
+.content-box-left.fading-out {
+    animation-name: fadeOutContentLeft;
+}
+
+.content-box-right.fading-out {
+    animation-name: fadeOutContentRight;
+}
+
+.content-box-bottom.fading-out {
+    animation-name: fadeOutContentBottom;
+}
+
+@keyframes fadeOutContentLeft {
+    0% {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-25%) translateX(0);
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-25%) translateX(-600px);
+    }
+}
+
+@keyframes fadeOutContentRight {
+    0% {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(-25%) translateX(0);
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-25%) translateX(600px);
+    }
+}
+
+@keyframes fadeOutContentBottom {
+    0% {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(100px);
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        transform: translateX(-50%) translateY(400px);
+    }
+}
+
+/* Content box headers */
+.content-box-header {
+    color: var(--matrix-green);
+    border-bottom: 1px solid var(--matrix-green);
+    padding-bottom: 8px;
+    margin-top: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+}
+
+/* Additional styles for Jellyfin content in app detail */
+
+/* Container for the three-column layout */
+.jellyfin-content {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+/* Column styling */
+.jellyfin-column {
+    flex: 1;
+    padding: 0 10px;
+    position: relative;
+    min-height: 250px; /* Fixed height for columns */
+    max-height: 250px;
+    overflow: hidden;
+    border-right: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.jellyfin-column:last-child {
+    border-right: none;
+}
+
+/* Section header */
+.jellyfin-column h4 {
+    color: var(--matrix-green);
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-family: 'Courier New', monospace;
+    text-align: center;
+}
+
+/* Item container - all items will be positioned absolutely within this */
+.jellyfin-items-container {
+    position: relative;
+    width: 100%;
+    height: 180px; /* Fixed height for items container */
+}
+
+/* Individual media items in columns */
+.jellyfin-items-container .jellyfin-media-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    padding: 5px;
+    margin-bottom: 0;
+    border-bottom: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0s 0.5s;
+}
+
+.jellyfin-items-container .jellyfin-media-item.active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-in-out, visibility 0s;
+}
+
+/* Navigation controls for each column */
+.jellyfin-nav-controls {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+}
+
+.jellyfin-nav-button {
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    width: 24px;
+    height: 24px;
+    margin: 0 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    border-radius: 50%;
+}
+
+.jellyfin-nav-button:hover {
+    background: rgba(0, 255, 0, 0.2);
+}
+
+.jellyfin-item-indicator {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    bottom: 5px;
+    left: 0;
+    width: 100%;
+    gap: 5px;
+}
+
+.jellyfin-indicator-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(0, 255, 0, 0.2);
+    border: 1px solid rgba(0, 255, 0, 0.5);
+    cursor: pointer;
+}
+
+.jellyfin-indicator-dot.active {
+    background: var(--matrix-green);
+}
+
+/* Force the app-button to stay below Jellyfin content */
+.jellyfin-detail .app-button {
+    position: relative;
+    z-index: 5;
+    margin-top: 10px;
+}
+
+/* Original media item styling for other contexts */
+.jellyfin-media-item {
+    display: flex;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+    transition: background-color 0.2s ease;
+    padding: 5px;
+}
+
+.jellyfin-media-item:hover {
+    background-color: rgba(0, 255, 0, 0.05);
+    cursor: pointer;
+}
+
+.jellyfin-media-poster {
+    width: 60px;
+    height: 90px;
+    object-fit: cover;
+    margin-right: 10px;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.jellyfin-media-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.jellyfin-media-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.jellyfin-media-details {
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+/* Style the scrollbar for the Jellyfin content */
+.jellyfin-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.jellyfin-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.jellyfin-content::-webkit-scrollbar-thumb {
+    background-color: var(--matrix-green);
+    border-radius: 3px;
+}
+
+/* Spacing between sections */
+.jellyfin-recently-played,
+.jellyfin-recently-added-movies,
+.jellyfin-recently-added-series {
+    margin-bottom: 20px;
+}
+
+.jellyfin-recently-added-series {
+    margin-bottom: 0;
+}
+
+/* Movie/TV show charts */
+.media-chart-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.chart-rank {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--matrix-green);
+    width: 30px;
+    text-align: center;
+}
+
+.chart-title {
+    flex: 1;
+}
+
+/* Media trailers */
+.trailer-container {
+    margin-bottom: 10px;
+}
+
+.trailer-thumbnail {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    margin-bottom: 5px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.trailer-thumbnail:hover {
+    border-color: var(--matrix-green);
+}
+
+.trailer-title {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+/* News items */
+.news-item {
+    display: flex;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.news-image {
+    width: 100px;
+    height: 60px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.news-content {
+    flex: 1;
+}
+
+.news-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.news-description {
+    font-size: 0.9em;
+    color: #ddd;
+    margin-bottom: 5px;
+}
+
+.news-source {
+    font-size: 0.8em;
+    color: #aaa;
+}
+
+/* Loading animation */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(0, 255, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--matrix-green);
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* No items placeholder */
+.jellyfin-no-items {
+    text-align: center;
+    color: #aaa;
+    padding: 20px 0;
+}

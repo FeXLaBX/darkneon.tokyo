@@ -1,0 +1,161 @@
+/* config-menu.css */
+.config-button {
+    position: fixed;
+    bottom: 50px; /* Position above the version info which is at 10px */
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem; /* Match version info size */
+    padding: 3px 6px;
+    cursor: pointer;
+    z-index: 101;
+    text-shadow: 0 0 5px var(--matrix-green);
+    opacity: 0; /* Start hidden */
+    visibility: hidden;
+    transition: opacity 4s ease-out, visibility 0s 4s; /* Match main page transition */
+}
+
+.config-button:hover {
+    background: rgba(0, 255, 0, 0.2);
+    opacity: 1 !important;
+}
+
+/* Config menu should appear above the button */
+.config-menu {
+    position: fixed;
+    bottom: 75px; /* Position above the config button */
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--matrix-green);
+    color: var(--matrix-green);
+    font-family: 'Courier New', monospace;
+    padding: 12px;
+    z-index: 101;
+    width: 250px; /* Slightly smaller */
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    font-size: 0.9rem; /* Smaller font overall */
+    display: none; /* Use display property for instant toggling */
+}
+
+.config-menu.visible {
+    display: block;
+}
+
+.config-option {
+    margin-bottom: 10px; /* Reduced from 15px to squeeze elements together */
+}
+
+.config-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--matrix-green);
+    padding-bottom: 5px;
+}
+
+/* Toggle switch styling */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    margin-left: 10px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(0, 255, 0, 0.5);
+    transition: .4s;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 3px;
+    background-color: var(--matrix-green);
+    transition: .4s;
+}
+
+input:checked + .toggle-slider {
+    background-color: rgba(0, 255, 0, 0.2);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.toggle-slider.round {
+    border-radius: 24px;
+}
+
+.toggle-slider.round:before {
+    border-radius: 50%;
+}
+
+.config-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Fix for auth form visibility */
+.auth-form {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.auth-form.visible {
+    opacity: 1 !important; /* Important to override any inline styles */
+}
+
+.auth-container.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Opacity slider styling */
+.opacity-slider {
+    width: 100px;
+    height: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(0, 255, 0, 0.5);
+    border-radius: 5px;
+    outline: none;
+}
+
+.opacity-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--matrix-green);
+    cursor: pointer;
+}
+
+.opacity-slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: var(--matrix-green);
+    cursor: pointer;
+    border: none;
+}

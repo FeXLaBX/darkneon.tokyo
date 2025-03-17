@@ -1,0 +1,26 @@
+{
+  "jellyfin": {
+    "baseUrl": "https://jellyfin.darkneon.tokyo",
+    "apiKey": "49d07955af6b45318905336a06dff30a",
+    "userId": "0816cc18cc454fac99f1364c922eda37",
+    "clientInfo": {
+      "client": "DarkNeon.Tokyo",
+      "device": "Web Dashboard",
+      "deviceId": "darkneon-dashboard-web",
+      "version": "1.0.0"
+    }
+  },
+  "kavita": {
+    "baseUrl": "https://kavita.darkneon.tokyo",
+    "apiKey": ""
+  },
+  "externalApis": {
+    "youtube": {
+      "apiKey": "Boris_YOUTUBE_API_KEY_HERE"
+    },
+    "tmdb": {
+      "apiKey": "b3e9e702d09509b0e02cc6c8219cc501",
+      "accessToken": "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiM2U5ZTcwMmQwOTUwOWIwZTAyY2M2YzgyMTljYzUwMSIsIm5iZiI6MTM4MjAzMzA1Mi4wLCJzdWIiOiI1MjYwMjY5Yjc2MGVlMzMzNDkyNGEzYWYiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.2FDA4ZzHmfzWj0XsDh4x4lq3KR8aaduJPL5g3BOmRrs"
+    }
+  }
+}

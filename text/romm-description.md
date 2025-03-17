@@ -1,0 +1,1 @@
+Romm is a cutting-edge ROM manager that helps you organize and access your gaming library. It provides a beautiful interface to browse, sort, and launch your favorite retro games. Relive the classics with a modern touch, all within a sleek cyberpunk-inspired environment.

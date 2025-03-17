@@ -1,0 +1,167 @@
+/* Animation Variables */
+:root {
+    --transition-duration: 0.7s;
+    --transition-timing: ease-out;
+    --fade-duration: 0.2s;
+    --jellyfin-move-duration: 1.2s;
+    --jellyfin-ease: cubic-bezier(0.25, 0.1, 0.25, 1); /* ease-in-out */
+    --logo-fade-duration: 0.3s; /* New variable for logo fading */
+}
+
+/* ===============================
+   TRANSITIONS
+   =============================== */
+
+/* Quick fade transitions */
+.wallpaper-glow,
+.wallpaper-outer-glow,
+.glow-layer {
+    transition: opacity var(--fade-duration) ease-out;
+    will-change: opacity;
+}
+
+/* Smooth cursor movement */
+.mask-overlay {
+    transition: background-position 0.1s linear, transform var(--transition-duration) var(--transition-timing);
+    will-change: transform, background-position;
+}
+
+/* Expansion transitions */
+body.expanded .mask-overlay {
+    transform: scale(10);
+}
+
+body.expanded .auth-container {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease-out 0.7s;
+}
+
+/* Disable animations during expansion */
+body.expanding .mask-overlay {
+    animation: none;
+}
+
+.auth-form {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.auth-button {
+    transition: background-color 0.3s ease, opacity 1.2s ease-in, visibility 0s 0s;
+}
+
+.auth-button.visible {
+    transition: background-color 0.3s ease, opacity 1.2s ease-in, visibility 0s 0s;
+}
+
+/* ===============================
+   PERFORMANCE OPTIMIZATIONS
+   =============================== */
+
+/* Hardware acceleration for animations */
+.mask-overlay,
+.glow-layer,
+.wallpaper-glow,
+.wallpaper-outer-glow {
+    backface-visibility: hidden;
+    transform-style: preserve-3d;
+    will-change: transform, opacity;
+}
+
+/* ===============================
+   KEYFRAME ANIMATIONS
+   =============================== */
+
+/* Background glow animations */
+@keyframes pulse {
+    0%, 100% { filter: blur(20px) brightness(1.5); }
+    50% { filter: blur(25px) brightness(1.8); }
+}
+
+@keyframes outerPulse {
+    0%, 100% { filter: blur(30px) brightness(1.2); }
+    50% { filter: blur(35px) brightness(1.4); }
+}
+
+@keyframes wobble {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Matrix text animation */
+@keyframes typewriter {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink-cursor {
+    from, to { background-color: var(--matrix-green); }
+    50% { background-color: transparent; }
+}
+
+/* ===============================
+   ANIMATION IMPLEMENTATIONS
+   =============================== */
+
+/* Glow animations */
+.wallpaper-glow {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.wallpaper-outer-glow {
+    animation: outerPulse 3s ease-in-out infinite;
+}
+
+.glow-layer {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.glow-layer:nth-child(2) {
+    animation: pulse 2s ease-in-out infinite -1s;
+}
+
+/* Mask overlay animation */
+.mask-overlay {
+    animation: wobble 3s ease-in-out infinite;
+}
+
+/* CUSTOM CURSOR STYLES */
+.cursor-element {
+    position: absolute;
+    display: inline-block;
+    width: 0.5em;
+    height: 1.2em;
+    background-color: var(--matrix-green);
+    animation: blink-cursor 0.75s step-end infinite;
+    z-index: 100;
+    opacity: 1;
+}
+
+/* Matrix text styling - modified for more direct control */
+.matrix-heading, .matrix-subtext {
+    color: var(--matrix-green);
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px var(--matrix-green), 2px 2px 4px black, -2px -2px 4px black, 2px -2px 4px black, -2px 2px 4px black;
+    white-space: nowrap;
+    overflow: hidden;
+    margin: 0 0 2rem 0;
+    width: 0;
+    visibility: visible;
+    display: block;
+}
+
+.matrix-heading {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.matrix-subtext {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Typing animation */
+.typing-animation {
+    animation: typewriter 4s steps(40, end) forwards;
+}

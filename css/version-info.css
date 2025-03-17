@@ -1,0 +1,23 @@
+/* Version info styles */
+.version-info {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    color: var(--matrix-green);
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    opacity: 0.6;
+    text-align: right;
+    z-index: 100; /* Make sure it's above other elements */
+    text-shadow: 0 0 5px var(--matrix-green);
+    pointer-events: none; /* Prevent it from intercepting clicks */
+    transition: opacity 4s ease-out, visibility 0s 4s; /* Match main page transition */
+}
+
+.key-shortcut {
+    display: inline-block;
+    border: 1px solid var(--matrix-green);
+    padding: 0 4px;
+    margin: 0 2px;
+    border-radius: 3px;
+}

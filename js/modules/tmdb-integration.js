@@ -119,7 +119,7 @@ const TMDBIntegration = {
       html += `
         <div class="tmdb-content-section">
           <h4>Top Anime Movies
-            <button class="tmdb-refresh-button" title="Refresh Data" onclick="window.TMDBIntegration.refreshMovies()">↻</button>
+            <button class="tmdb-refresh-button" title="Refresh Data" onclick="event.stopPropagation(); window.TMDBIntegration.refreshMovies()">↻</button>
           </h4>
       `;
       
@@ -156,7 +156,7 @@ const TMDBIntegration = {
       html += `
         <div class="tmdb-content-section">
           <h4>Top Anime Series
-            <button class="tmdb-refresh-button" title="Refresh Data" onclick="window.TMDBIntegration.refreshTVShows()">↻</button>
+            <button class="tmdb-refresh-button" title="Refresh Data" onclick="event.stopPropagation(); window.TMDBIntegration.refreshTVShows()">↻</button>
           </h4>
       `;
       
@@ -202,7 +202,12 @@ const TMDBIntegration = {
       
       // Add click handlers for detailed view
       contentDiv.querySelectorAll('.media-chart-item').forEach(item => {
-        item.addEventListener('click', this.handleItemClick.bind(this));
+        item.addEventListener('click', (e) => {
+          // Immediately stop propagation to prevent app closing
+          e.stopPropagation();
+          // Then handle the item click
+          this.handleItemClick(e);
+        });
       });
       
       console.log("Anime content loaded successfully");
@@ -214,8 +219,8 @@ const TMDBIntegration = {
         <div class="error-message">
           <p>Sorry, there was an error loading anime data.</p>
           <p>Error: ${error.message}</p>
-          <button class="tmdb-refresh-button" style="position:static; transform:none; margin-top:10px;" 
-            onclick="window.TMDBIntegration.loadAnimeContent()">Try Again</button>
+          <button class="tmdb-refresh-button" style="position:static; transform:none; margin-top:10px;"
+            onclick="event.stopPropagation(); window.TMDBIntegration.loadAnimeContent()">Try Again</button>
         </div>
       `;
     }
@@ -223,6 +228,9 @@ const TMDBIntegration = {
   
   // Handle clicks on chart items
   async handleItemClick(event) {
+    // Stop propagation immediately to prevent app closing
+    event.stopPropagation();
+    
     const item = event.currentTarget;
     const id = item.getAttribute('data-id');
     const type = item.getAttribute('data-type');
@@ -268,12 +276,14 @@ const TMDBIntegration = {
       
       // Add close functionality
       const closeButton = modalContainer.querySelector('.tmdb-modal-close');
-      closeButton.addEventListener('click', () => {
+      closeButton.addEventListener('click', (e) => {
+        e.stopPropagation(); // Stop propagation immediately
         modalContainer.style.display = 'none';
       });
       
       // Close on click outside the modal content
       modalContainer.addEventListener('click', (e) => {
+        e.stopPropagation(); // Stop propagation immediately
         if (e.target === modalContainer) {
           modalContainer.style.display = 'none';
         }
@@ -302,28 +312,11 @@ const TMDBIntegration = {
       const posterUrl = details.posterPath || 
         TMDBAPI.getFallbackPosterUrl(details.title);
       
-      // Video embed code if a trailer is available
-      let trailerEmbed = '';
-      if (details.trailer && details.trailer.key) {
-        trailerEmbed = `
-          <div class="tmdb-trailer">
-            <iframe 
-              width="100%" 
-              height="250" 
-              src="https://www.youtube.com/embed/${details.trailer.key}" 
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowfullscreen
-            ></iframe>
-          </div>
-        `;
-      }
-      
       // Format release date or first air date
       const releaseDate = type === 'movie' ? details.releaseDate : details.firstAirDate;
       const formattedDate = releaseDate ? new Date(releaseDate).toLocaleDateString() : 'N/A';
       
-      // Build the modal HTML
+      // Build the modal HTML with modified layout
       modalContainer.innerHTML = `
         <div class="tmdb-modal">
           <div class="tmdb-modal-content">
@@ -333,24 +326,53 @@ const TMDBIntegration = {
               ${details.originalTitle !== details.title ? `<h4 class="original-title">${details.originalTitle}</h4>` : ''}
             </div>
             <div class="tmdb-modal-body">
-              <div class="tmdb-details-container">
-                <div class="tmdb-poster">
-                  <img src="${posterUrl}" alt="${details.title}" 
-                    onerror="this.src='https://placehold.co/300x450/333/666?text=${encodeURIComponent(details.title)}'">
+              <!-- Full-width overview and metadata section -->
+              <div class="tmdb-full-width-section">
+                <!-- Overview section -->
+                <div class="tmdb-overview">${details.overview || 'No overview available.'}</div>
+                
+                <!-- Metadata section with lighter font -->
+                <div class="tmdb-meta-full">
+                  <div><strong>Rating:</strong> ${details.voteAverage?.toFixed(1) || 'N/A'}/10</div>
+                  <div><strong>Release Date:</strong> ${formattedDate}</div>
+                  ${type === 'movie' ? 
+                    `<div><strong>Runtime:</strong> ${details.runtime ? `${details.runtime} min` : 'N/A'}</div>` : 
+                    `<div><strong>Seasons:</strong> ${details.numberOfSeasons || 'N/A'}</div>
+                     <div><strong>Episodes:</strong> ${details.numberOfEpisodes || 'N/A'}</div>`
+                  }
+                  <div><strong>Genres:</strong> ${details.genres?.map(g => g.name).join(', ') || 'N/A'}</div>
                 </div>
-                <div class="tmdb-info">
-                  <div class="tmdb-overview">${details.overview || 'No overview available.'}</div>
-                  <div class="tmdb-meta">
-                    <div><strong>Rating:</strong> ${details.voteAverage?.toFixed(1) || 'N/A'}/10</div>
-                    <div><strong>Release Date:</strong> ${formattedDate}</div>
-                    ${type === 'movie' ? 
-                      `<div><strong>Runtime:</strong> ${details.runtime ? `${details.runtime} min` : 'N/A'}</div>` : 
-                      `<div><strong>Seasons:</strong> ${details.numberOfSeasons || 'N/A'}</div>
-                       <div><strong>Episodes:</strong> ${details.numberOfEpisodes || 'N/A'}</div>`
-                    }
-                    <div><strong>Genres:</strong> ${details.genres?.map(g => g.name).join(', ') || 'N/A'}</div>
-                  </div>
-                  ${trailerEmbed}
+              </div>
+              
+              <!-- Side-by-side poster and trailer container -->
+              <div class="tmdb-media-container">
+                <!-- Poster container - 1/3 width -->
+                <div class="tmdb-poster-container">
+                  <img src="${posterUrl}" alt="${details.title}" 
+                    onerror="this.src='${TMDBAPI.getFallbackPosterUrl(details.title)}'">
+                </div>
+                
+                <!-- Trailer container - 2/3 width -->
+                <div class="tmdb-trailer-container">
+                  ${details.trailer && details.trailer.key ? 
+                    `<div class="tmdb-trailer">
+                      <iframe 
+                        width="100%" 
+                        height="100%" 
+                        src="https://www.youtube.com/embed/${details.trailer.key}" 
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen
+                      ></iframe>
+                      <div class="tmdb-trailer-label">Trailer</div>
+                    </div>` : 
+                    `<div class="tmdb-no-trailer">
+                      <div class="tmdb-no-trailer-content">
+                        <div class="tmdb-no-trailer-icon">¯\\_(ツ)_/¯</div>
+                        <div class="tmdb-no-trailer-text">No trailer available for this title</div>
+                      </div>
+                    </div>`
+                  }
                 </div>
               </div>
             </div>
@@ -365,12 +387,14 @@ const TMDBIntegration = {
       
       // Re-add close functionality
       const updatedCloseButton = modalContainer.querySelector('.tmdb-modal-close');
-      updatedCloseButton.addEventListener('click', () => {
+      updatedCloseButton.addEventListener('click', (e) => {
+        e.stopPropagation(); // Stop propagation immediately
         modalContainer.style.display = 'none';
       });
       
       // Re-add click outside to close
       modalContainer.addEventListener('click', (e) => {
+        e.stopPropagation(); // Stop propagation immediately
         if (e.target === modalContainer) {
           modalContainer.style.display = 'none';
         }

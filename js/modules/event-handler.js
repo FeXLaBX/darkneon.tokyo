@@ -46,6 +46,18 @@ export function attachEventListeners() {
     // Stop propagation to prevent landing page expansion
     e.stopPropagation();
     
+    // Check if the click is on a TMDB element
+    const isTmdbElement = e.target.closest('.media-chart-item') ||
+                          e.target.closest('.tmdb-modal-content') ||
+                          e.target.closest('#tmdb-modal-container') ||
+                          e.target.closest('.tmdb-refresh-button');
+    
+    // If click is on a TMDB element, don't close the app
+    if (isTmdbElement) {
+      console.log("Click on TMDB element detected, not closing app");
+      return; // Exit early without closing the app
+    }
+    
     // Close config menu if it's open
     const configMenu = document.getElementById('configMenu');
     if (configMenu && configMenu.classList.contains('visible')) {
@@ -103,19 +115,19 @@ export function attachEventListeners() {
     
     // Check if click is on trailer controls
     const isTrailerControl = e.target.closest('.trailer-control') ||
-                             e.target.closest('.volume-slider') ||
-                             e.target.closest('.anime-trailer-player') ||
-                             e.target.closest('.trailer-player-container');
+                              e.target.closest('.volume-slider') ||
+                              e.target.closest('.anime-trailer-player') ||
+                              e.target.closest('.trailer-player-container');
     
     // IMPORTANT FIX: Check if the click is on a TMDB element
-    const isTmdbElement = e.target.closest('.media-chart-item') || 
-                          e.target.closest('.tmdb-modal-close') ||
-                          e.target.closest('.tmdb-refresh-button');
+    const isTmdbElement = e.target.closest('.media-chart-item') ||
+                           e.target.closest('.tmdb-modal-close') ||
+                           e.target.closest('.tmdb-refresh-button');
     
-    // IMPORTANT FIX: Check if the click is on our rotate button or its icon 
-    const isRotateButton = e.target.id === 'rotate-news-source' || 
-                           e.target.closest('#rotate-news-source') ||
-                           e.target.classList.contains('rotate-icon');
+    // IMPORTANT FIX: Check if the click is on our rotate button or its icon
+    const isRotateButton = e.target.id === 'rotate-news-source' ||
+                            e.target.closest('#rotate-news-source') ||
+                            e.target.classList.contains('rotate-icon');
     
     // Skip stopPropagation for TMDB elements
     if (isTmdbElement) {

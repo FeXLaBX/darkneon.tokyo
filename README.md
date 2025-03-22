@@ -37,45 +37,45 @@ A cyberpunk-themed media portal with a retro-futuristic aesthetic, providing acc
 
 ```
 darkneon.tokyo/
-├── css/                    # Stylesheets
-│   ├── animations.css      # Animation definitions
-│   ├── config-menu.css     # Configuration menu styles
-│   ├── content.css         # Content box styles
-│   ├── entertainment-news.css  # News feed styles
-│   ├── landingpage.css     # Landing page styles
-│   ├── main.css            # Main application styles
-│   ├── tmdb-styles.css     # TMDB content styles
-│   └── version-info.css    # Version info styles
-├── js/                     # JavaScript files
-│   ├── modules/            # Modular JS components
-│   │   ├── animation-handler.js    # Animation control
-│   │   ├── anime-trailer-integration.js  # Trailer integration
-│   │   ├── anime-trailer-manager.js  # Trailer player
-│   │   ├── app-state.js    # State management
-│   │   ├── content-box-manager.js  # Content boxes
-│   │   ├── content-core.js  # Core content handling
-│   │   ├── debug-tools.js  # Debugging utilities
-│   │   ├── entertainment-news.js  # News feed
-│   │   ├── error-recovery.js  # Error handling
-│   │   ├── event-bus.js    # Event system
-│   │   ├── event-handler.js  # Event handling
-│   │   ├── jellyfin-api.js  # Jellyfin integration
-│   │   ├── loading-indicators.js  # Loading indicators
-│   │   ├── logo-manager.js  # Logo handling
-│   │   ├── mainpage-core.js  # Main page initialization
-│   │   ├── performance-monitoring.js  # Performance metrics
-│   │   ├── tmdb-api.js     # TMDB API integration
-│   │   └── tmdb-integration.js  # TMDB UI integration
-│   ├── config-menu.js      # Configuration menu
-│   ├── landingpage.js      # Landing page functionality
-│   └── version-info.js     # Version information
-├── images/                 # Image assets
-├── sounds/                 # Sound effects
-├── api/                    # API configuration
-│   └── api-config.json     # API keys and endpoints
-├── partials/               # HTML partials
-│   └── version-info.html   # Version info partial
-└── index.html              # Main HTML file
+├── css/                                    # Stylesheets
+│   ├── animations.css                      # Animation definitions
+│   ├── config-menu.css                     # Configuration menu styles
+│   ├── content.css                         # Content box styles
+│   ├── entertainment-news.css              # News feed styles
+│   ├── landingpage.css                     # Landing page styles
+│   ├── main.css                            # Main application styles
+│   ├── tmdb-styles.css                     # TMDB content styles
+│   └── version-info.css                    # Version info styles
+├── js/                                     # JavaScript files
+│   ├── modules/                            # Modular JS components
+│   │   ├── animation-handler.js            # Animation control
+│   │   ├── anime-trailer-integration.js    # Trailer integration
+│   │   ├── anime-trailer-manager.js        # Trailer player
+│   │   ├── app-state.js                    # State management
+│   │   ├── content-box-manager.js          # Content boxes
+│   │   ├── content-core.js                 # Core content handling
+│   │   ├── debug-tools.js                  # Debugging utilities
+│   │   ├── entertainment-news.js           # News feed
+│   │   ├── error-recovery.js               # Error handling
+│   │   ├── event-bus.js                    # Event system
+│   │   ├── event-handler.js                # Event handling
+│   │   ├── jellyfin-api.js                 # Jellyfin integration
+│   │   ├── loading-indicators.js           # Loading indicators
+│   │   ├── logo-manager.js                 # Logo handling
+│   │   ├── mainpage-core.js                # Main page initialization
+│   │   ├── performance-monitoring.js       # Performance metrics
+│   │   ├── tmdb-api.js                     # TMDB API integration
+│   │   └── tmdb-integration.js             # TMDB UI integration
+│   ├── config-menu.js                      # Configuration menu
+│   ├── landingpage.js                      # Landing page functionality
+│   └── version-info.js                     # Version information
+├── images/                                 # Image assets
+├── sounds/                                 # Sound effects
+├── api/                                    # API configuration
+│   └── api-config.json                     # API keys and endpoints
+├── partials/                               # HTML partials
+│   └── version-info.html                   # Version info partial
+└── index.html                              # Main HTML file
 ```
 
 ## 🚀 Getting Started

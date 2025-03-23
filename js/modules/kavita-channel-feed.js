@@ -1,4 +1,4 @@
-// kavita-channel-feed.js
+// kavita-channel-feed.js - UPDATED
 // Module for displaying YouTube channels in the Kavita section
 
 import { EventBus } from './event-bus.js';
@@ -7,45 +7,8 @@ import { LoadingIndicator } from './loading-indicators.js';
 
 // Configuration for YouTube channel feed
 const channelFeedConfig = {
-    // Sample channels - replace with actual channel IDs
-    channels: [
-        {
-            id: 'UCxPCparZBUQT1RSVNuQTVOA', // Omnibus Collector
-            name: 'The Omnibus Collector',
-            description: 'Dedicated to comic book collected editions, omnibuses, and absolute editions.',
-            thumbnail: 'https://placehold.co/100x100/333/666?text=Omnibus'
-        },
-        {
-            id: 'UC9dVb4LRNZ8BrwqCxwaDrUw', // Near Mint Condition
-            name: 'Near Mint Condition',
-            description: 'A channel about comic book collected editions, high end formats like hardcovers, omnibuses, and absolute editions.',
-            thumbnail: 'https://placehold.co/100x100/333/666?text=Near+Mint'
-        },
-        {
-            id: 'UCd6FXMWw2V6WtR8HGNvYmXQ', // Manga Sloth
-            name: 'Manga Sloth',
-            description: 'A channel dedicated to manga reviews, hauls, and collecting guides.',
-            thumbnail: 'https://placehold.co/100x100/333/666?text=Manga+Sloth'
-        },
-        {
-            id: 'UCVbuMteYoOULd8qA82xonXg', // Comic Tom 101
-            name: 'Comic Tom 101',
-            description: 'Reviews and news about comics, manga, and graphic novels.',
-            thumbnail: 'https://placehold.co/100x100/333/666?text=Comic+Tom'
-        },
-        {
-            id: 'UCncsJKwKOD0w1uQWn_XIISA', // Gem Mint Collectibles
-            name: 'Gem Mint Collectibles',
-            description: 'Reviews of comics, manga, and omnibuses with a focus on collectibility.',
-            thumbnail: 'https://placehold.co/100x100/333/666?text=Gem+Mint'
-        },
-        {
-            id: 'UCxcXXCzh5d8ETXssbYOT8IA', // Book Worm
-            name: 'Book Worm',
-            description: 'Literary content, book reviews, and reading recommendations.',
-            thumbnail: 'https://placehold.co/100x100/333/666?text=Book+Worm'
-        }
-    ],
+    // Sample channels - will be replaced with config from yt-config.json
+    channels: [],
     
     // YouTube API key (will be loaded from config)
     apiKey: '',
@@ -73,8 +36,17 @@ export function initializeChannelFeed() {
     // Set up event listeners
     setupEventListeners();
     
-    // Load channel data (thumbnails, titles)
-    loadChannelData();
+    // Load channel data from yt-config.json
+    loadChannelConfig()
+        .then(() => {
+            // After config is loaded, load channel data (thumbnails, titles)
+            return loadChannelData();
+        })
+        .catch(error => {
+            console.error("Error initializing channel feed:", error);
+            // Load with default data anyway
+            loadChannelData();
+        });
     
     // Make the API globally available
     window.KavitaChannelFeed = {
@@ -123,6 +95,81 @@ async function loadAPIKey() {
     }
 }
 
+// NEW: Load channel configuration from yt-config.json
+async function loadChannelConfig() {
+    try {
+        // Try multiple paths to find the config
+        const configPaths = [
+            '/youtube/yt-config.json',
+            '/yt-config.json',
+            'youtube/yt-config.json',
+            'yt-config.json'
+        ];
+        
+        let config = null;
+        
+        // Try each path until we find a valid config
+        for (const path of configPaths) {
+            try {
+                console.log(`Trying to load yt-config.json from ${path}`);
+                const response = await fetch(path);
+                if (response.ok) {
+                    config = await response.json();
+                    console.log(`Successfully loaded yt-config.json from ${path}`);
+                    break;
+                }
+            } catch (e) {
+                console.warn(`Failed to load from ${path}:`, e.message);
+            }
+        }
+        
+        if (!config) {
+            throw new Error("Could not load yt-config.json from any path");
+        }
+        
+        // Extract kavita configuration
+        if (config.kavita) {
+            // Check if we have a channels array
+            if (config.kavita.channels && Array.isArray(config.kavita.channels)) {
+                channelFeedConfig.channels = config.kavita.channels;
+                console.log(`Loaded ${channelFeedConfig.channels.length} channels from yt-config.json`);
+            } else {
+                // If no channels array, use the main channel info
+                channelFeedConfig.channels = [{
+                    id: config.kavita.channelId,
+                    name: config.kavita.channelName || "Comic Book Channel"
+                }];
+                console.log("Using single channel from yt-config.json");
+            }
+            
+            // Store other config settings
+            channelFeedConfig.maxResults = config.kavita.maxResults || 10;
+            channelFeedConfig.fallbackVideos = config.kavita.fallbackVideos || [];
+        } else {
+            throw new Error("No Kavita configuration found in yt-config.json");
+        }
+        
+        return true;
+    } catch (error) {
+        console.error("Error loading channel configuration:", error);
+        
+        // Set up default channels if config loading fails
+        channelFeedConfig.channels = [
+            {
+                id: 'UCLE0YuDRMprbHMfbvJYZpMw',
+                name: 'Raph Retro Comics'
+            },
+            {
+                id: 'UCDOkxRiVpdv6bYqrSa4TZlA',
+                name: 'Dope Comix'
+            }
+        ];
+        
+        console.log("Using default channels due to config loading error");
+        return false;
+    }
+}
+
 // Create the channel feed container
 function createChannelFeedContainer() {
     // Check if container already exists
@@ -137,7 +184,7 @@ function createChannelFeedContainer() {
     // Add title
     const title = document.createElement('div');
     title.className = 'kavita-channel-feed-title';
-    title.textContent = 'Featured Reading Channels';
+    title.textContent = 'Featured Comic Book Channels';
     container.appendChild(title);
     
     // Create channel list
@@ -301,11 +348,19 @@ async function loadChannelData() {
     if (!channelList) return;
     
     try {
-        // Check if we have the API key
-        if (!channelFeedConfig.apiKey) {
-            console.warn("No YouTube API key available, using placeholder data");
-            loadPlaceholderChannelData();
-            return;
+        // Make sure we have channels
+        if (!channelFeedConfig.channels || channelFeedConfig.channels.length === 0) {
+            console.warn("No channels configured, loading default channels");
+            channelFeedConfig.channels = [
+                {
+                    id: 'UCLE0YuDRMprbHMfbvJYZpMw',
+                    name: 'Raph Retro Comics'
+                },
+                {
+                    id: 'UCDOkxRiVpdv6bYqrSa4TZlA',
+                    name: 'Dope Comix'
+                }
+            ];
         }
         
         // Show loading state
@@ -314,70 +369,52 @@ async function loadChannelData() {
         // Start building the channel list HTML
         let channelsHTML = '';
         
-        // Process each channel
-        for (const channel of channelFeedConfig.channels) {
-            try {
-                // Fetch channel data from YouTube API
-                const response = await fetch(
-                    `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channel.id}&key=${channelFeedConfig.apiKey}`
-                );
-                
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch channel data: ${response.status}`);
+        // Process each channel - with batching for better performance
+        const batchSize = 3; // Process channels in batches of 3
+        const batches = [];
+        
+        // Divide channels into batches
+        for (let i = 0; i < channelFeedConfig.channels.length; i += batchSize) {
+            batches.push(channelFeedConfig.channels.slice(i, i + batchSize));
+        }
+        
+        // Process batches sequentially
+        for (const batch of batches) {
+            // Process channels in this batch in parallel
+            const batchResults = await Promise.all(
+                batch.map(channel => fetchChannelInfo(channel))
+            );
+            
+            // Add HTML for each channel
+            batchResults.forEach(result => {
+                if (result.success) {
+                    channelsHTML += result.html;
                 }
-                
-                const data = await response.json();
-                
-                if (data.items && data.items.length > 0) {
-                    const channelData = data.items[0];
-                    const snippet = channelData.snippet;
-                    const statistics = channelData.statistics;
-                    
-                    // Update channel info with real data
-                    channel.name = snippet.title;
-                    channel.description = snippet.description;
-                    channel.thumbnail = snippet.thumbnails.medium.url; // Using medium thumbnail
-                    channel.subscribers = parseInt(statistics.subscriberCount, 10);
-                    channel.videoCount = parseInt(statistics.videoCount, 10);
-                    
-                    // Add channel to the list
-                    channelsHTML += `
-                        <div class="kavita-channel-item" data-channel-id="${channel.id}">
-                            <div class="kavita-channel-thumbnail">
-                                <img src="${channel.thumbnail}" alt="${channel.name}">
-                            </div>
-                            <div class="kavita-channel-name">${channel.name}</div>
-                        </div>
-                    `;
-                }
-            } catch (channelError) {
-                console.error(`Error fetching data for channel ${channel.id}:`, channelError);
-                
-                // Add with placeholder data
-                channelsHTML += `
-                    <div class="kavita-channel-item" data-channel-id="${channel.id}">
-                        <div class="kavita-channel-thumbnail">
-                            <img src="${channel.thumbnail}" alt="${channel.name}">
-                        </div>
-                        <div class="kavita-channel-name">${channel.name}</div>
-                    </div>
-                `;
-            }
+            });
         }
         
         // Update the channel list
-        channelList.innerHTML = channelsHTML;
-        
-        // Add click handlers
-        const channelItems = channelList.querySelectorAll('.kavita-channel-item');
-        channelItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                const channelId = item.getAttribute('data-channel-id');
-                if (channelId) {
-                    openChannelModal(channelId);
-                }
+        if (channelsHTML) {
+            channelList.innerHTML = channelsHTML;
+            
+            // Add click handlers
+            const channelItems = channelList.querySelectorAll('.kavita-channel-item');
+            channelItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const channelId = item.getAttribute('data-channel-id');
+                    if (channelId) {
+                        openChannelModal(channelId);
+                    }
+                });
             });
-        });
+        } else {
+            // No channels loaded, show message
+            channelList.innerHTML = `
+                <div class="kavita-channel-placeholder-note">
+                    No channels found - check your configuration
+                </div>
+            `;
+        }
         
         LoadingIndicator.endLoading('kavitaChannels');
         console.log("Channel data loaded successfully");
@@ -390,6 +427,91 @@ async function loadChannelData() {
     }
 }
 
+// Helper function to fetch info for a single channel
+async function fetchChannelInfo(channel) {
+    try {
+        // Check if we have the API key
+        if (!channelFeedConfig.apiKey) {
+            console.warn(`No YouTube API key available for channel ${channel.id}, using placeholder data`);
+            return {
+                success: true,
+                html: getPlaceholderChannelHTML(channel)
+            };
+        }
+        
+        // Fetch channel data from YouTube API
+        const response = await fetch(
+            `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channel.id}&key=${channelFeedConfig.apiKey}`
+        );
+        
+        if (!response.ok) {
+            throw new Error(`Failed to fetch channel data: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.items && data.items.length > 0) {
+            const channelData = data.items[0];
+            const snippet = channelData.snippet;
+            const statistics = channelData.statistics;
+            
+            // Update channel object with real data
+            channel.name = channel.name || snippet.title;
+            channel.description = snippet.description;
+            channel.thumbnail = snippet.thumbnails.medium.url; // Using medium thumbnail
+            channel.subscribers = parseInt(statistics.subscriberCount, 10);
+            channel.videoCount = parseInt(statistics.videoCount, 10);
+            
+            // Generate HTML for this channel
+            const html = `
+                <div class="kavita-channel-item" data-channel-id="${channel.id}">
+                    <div class="kavita-channel-thumbnail">
+                        <img src="${channel.thumbnail}" alt="${channel.name}">
+                    </div>
+                    <div class="kavita-channel-name">${channel.name}</div>
+                </div>
+            `;
+            
+            return {
+                success: true,
+                html
+            };
+        } else {
+            // Channel not found, use placeholder
+            console.warn(`Channel ${channel.id} not found, using placeholder`);
+            return {
+                success: true,
+                html: getPlaceholderChannelHTML(channel)
+            };
+        }
+    } catch (error) {
+        console.error(`Error fetching data for channel ${channel.id}:`, error);
+        
+        // Return placeholder HTML for this channel
+        return {
+            success: true,
+            html: getPlaceholderChannelHTML(channel)
+        };
+    }
+}
+
+// Helper to generate placeholder HTML for a channel
+function getPlaceholderChannelHTML(channel) {
+    // Use channel.name if available, otherwise use a generic name based on ID
+    const name = channel.name || `Channel ${channel.id.substring(0, 6)}`;
+    const thumbnail = channel.thumbnail || `https://placehold.co/100x100/333/666?text=${encodeURIComponent(name)}`;
+    
+    return `
+        <div class="kavita-channel-item" data-channel-id="${channel.id}">
+            <div class="kavita-channel-thumbnail">
+                <img src="${thumbnail}" alt="${name}" 
+                    onerror="this.src='https://placehold.co/100x100/333/666?text=${encodeURIComponent(name)}'">
+            </div>
+            <div class="kavita-channel-name">${name}</div>
+        </div>
+    `;
+}
+
 // Load placeholder channel data
 function loadPlaceholderChannelData() {
     const channelList = document.querySelector('.kavita-channel-list');
@@ -398,16 +520,22 @@ function loadPlaceholderChannelData() {
     // Build HTML for placeholder channels
     let channelsHTML = '';
     
-    channelFeedConfig.channels.forEach(channel => {
-        channelsHTML += `
-            <div class="kavita-channel-item" data-channel-id="${channel.id}">
-                <div class="kavita-channel-thumbnail">
-                    <img src="${channel.thumbnail}" alt="${channel.name}" 
-                        onerror="this.src='https://placehold.co/100x100/333/666?text=${encodeURIComponent(channel.name)}'">
-                </div>
-                <div class="kavita-channel-name">${channel.name}</div>
-            </div>
-        `;
+    // Use configured channels if available, otherwise use fallback
+    const channelsToDisplay = channelFeedConfig.channels.length > 0 
+        ? channelFeedConfig.channels 
+        : [
+            {
+                id: 'UCLE0YuDRMprbHMfbvJYZpMw',
+                name: 'Raph Retro Comics'
+            },
+            {
+                id: 'UCDOkxRiVpdv6bYqrSa4TZlA',
+                name: 'Dope Comix'
+            }
+        ];
+    
+    channelsToDisplay.forEach(channel => {
+        channelsHTML += getPlaceholderChannelHTML(channel);
     });
     
     // Add placeholder indication
@@ -486,7 +614,7 @@ async function openChannelModal(channelId) {
                     
                     channelData = {
                         id: channelId,
-                        name: item.snippet.title,
+                        name: channel.name || item.snippet.title,
                         description: item.snippet.description,
                         thumbnail: item.snippet.thumbnails.medium.url,
                         subscribers: parseInt(item.statistics.subscriberCount, 10),
@@ -496,7 +624,7 @@ async function openChannelModal(channelId) {
                 
                 // Fetch latest videos
                 const videosResponse = await fetch(
-                    `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=5&order=date&type=video&key=${channelFeedConfig.apiKey}`
+                    `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=${channelFeedConfig.maxResults || 5}&order=date&type=video&key=${channelFeedConfig.apiKey}`
                 );
                 
                 if (!videosResponse.ok) {
@@ -531,7 +659,7 @@ async function openChannelModal(channelId) {
             : 'N/A';
         
         // Update modal title
-        modal.querySelector('.kavita-modal-title').textContent = channelData.name;
+        modal.querySelector('.kavita-modal-title').textContent = channelData.name || `Channel ${channelId}`;
         
         // Prepare videos HTML
         let videosHTML = '';
@@ -558,8 +686,32 @@ async function openChannelModal(channelId) {
             });
             
             videosHTML += '</div>';
+        } else if (channelFeedConfig.fallbackVideos && channelFeedConfig.fallbackVideos.length > 0) {
+            // Use fallback videos
+            videosHTML = `
+                <div class="kavita-videos-header">
+                    Sample Videos (API key needed for channel videos)
+                </div>
+                <div class="kavita-videos-grid">
+            `;
+            
+            channelFeedConfig.fallbackVideos.forEach(video => {
+                videosHTML += `
+                    <div class="kavita-video-item" data-video-id="${video.id}">
+                        <div class="kavita-video-thumbnail">
+                            <img src="https://img.youtube.com/vi/${video.id}/mqdefault.jpg" alt="${video.title}">
+                        </div>
+                        <div class="kavita-video-info">
+                            <div class="kavita-video-title">${video.title}</div>
+                            <div class="kavita-video-date">Sample</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            videosHTML += '</div>';
         } else {
-            // No videos or API error
+            // No videos and no fallbacks
             videosHTML = `
                 <div class="kavita-videos-header">
                     ${channelFeedConfig.apiKey ? 'No videos found' : 'Videos unavailable - API key needed'}
@@ -568,12 +720,16 @@ async function openChannelModal(channelId) {
         }
         
         // Main video container - show first video if available
-        const mainVideoHTML = latestVideos.length > 0 ? `
+        const videoToShow = latestVideos.length > 0 ? latestVideos[0] : 
+                          (channelFeedConfig.fallbackVideos && channelFeedConfig.fallbackVideos.length > 0 ? 
+                           { id: channelFeedConfig.fallbackVideos[0].id } : null);
+        
+        const mainVideoHTML = videoToShow ? `
             <div class="kavita-video-container">
                 <iframe 
                     width="100%" 
                     height="100%" 
-                    src="https://www.youtube.com/embed/${latestVideos[0].id}" 
+                    src="https://www.youtube.com/embed/${videoToShow.id}" 
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                     allowfullscreen
@@ -597,11 +753,12 @@ async function openChannelModal(channelId) {
         const modalContent = `
             <div class="kavita-channel-info">
                 <div class="kavita-channel-thumbnail">
-                    <img src="${channelData.thumbnail}" alt="${channelData.name}"
-                        onerror="this.src='https://placehold.co/100x100/333/666?text=${encodeURIComponent(channelData.name)}'">
+                    <img src="${channelData.thumbnail || `https://placehold.co/100x100/333/666?text=${encodeURIComponent(channelData.name || 'Channel')}`}"
+                        alt="${channelData.name || 'Channel'}"
+                        onerror="this.src='https://placehold.co/100x100/333/666?text=${encodeURIComponent(channelData.name || 'Channel')}'">
                 </div>
                 <div class="kavita-channel-details">
-                    <div class="kavita-channel-description">${channelData.description.substring(0, 200)}${channelData.description.length > 200 ? '...' : ''}</div>
+                    <div class="kavita-channel-description">${channelData.description ? (channelData.description.substring(0, 200) + (channelData.description.length > 200 ? '...' : '')) : 'No description available'}</div>
                     <div class="kavita-channel-stats">
                         <div class="kavita-channel-subscribers">Subscribers: ${formattedSubscribers}</div>
                         <div class="kavita-channel-videos">Videos: ${formattedVideoCount}</div>
@@ -722,4 +879,4 @@ export {
     hideChannelFeed,
     openChannelModal,
     closeChannelModal
-};
+}

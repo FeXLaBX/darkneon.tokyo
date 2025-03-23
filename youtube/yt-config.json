@@ -1,38 +1,78 @@
 {
-    "jellyfin": {
-      "type": "jikan",
-      "endpoint": "https://api.jikan.moe/v4/top/anime?filter=airing&limit=25"
-    },
-    "kavita": {
-      "type": "youtube-api",
-      "channelId": "UCxPCparZBUQT1RSVNuQTVOA",
-      "channelName": "The Omnibus Collector",
-      "maxResults": 10,
-      "fallbackVideos": [
-        {
-          "id": "lIjOQ4VhTv0",
-          "title": "Omnibus Collector: Modern Comic Book Collected Editions Still Needed"
-        },
-        {
-          "id": "lbLFfB6ywMQ",
-          "title": "Omnibus Collector: Awesome X-Men Announcements"
-        }
-      ]
-    },
-    "romm": {
-      "type": "youtube-api",
-      "channelId": "UCJx5KP-pCUmL9eZUv-mIcNw",
-      "channelName": "Retro Game Corps",
-      "maxResults": 10,
-      "fallbackVideos": [
-        {
-          "id": "HKLc9hG9SzU",
-          "title": "Retro Game Music Compilation"
-        },
-        {
-          "id": "CY0KbjArksg",
-          "title": "Best Gaming Animation Compilation"
-        }
-      ]
-    }
+  "jellyfin": {
+    "type": "jikan",
+    "endpoint": "https://api.jikan.moe/v4/top/anime?filter=airing&limit=25"
+  },
+  "kavita": {
+    "type": "youtube-api",
+    "maxResults": 10,
+    "channels": [
+      {
+        "id": "UCLE0YuDRMprbHMfbvJYZpMw",
+        "name": "Raph Retro Comics"
+      },
+      {
+        "id": "UCDOkxRiVpdv6bYqrSa4TZlA",
+        "name": "Dope Comix"
+      },
+      {
+        "id": "UCVb5QLywchR0XkpxD1U-M-w",
+        "name": "Haul Yeah Comics"
+      },
+      {
+        "id": "UCY-Gg8WBdl9RGZbmDdtf-cA",
+        "name": "StillOnly35c"
+      },
+      {
+        "id": "UCmQy5x8IGXrpJn6GBvMqCmQ",
+        "name": "Doctor Von Hoot"
+      },
+      {
+        "id": "UC5D-OhuX8YlMWL0RdPOKEOQ",
+        "name": "Comic Culture"
+      },
+      {
+        "id": "UCJt1h-ic2hCwXeeMV4GXx-w",
+        "name": "3 Good Nerds"
+      },
+      {
+        "id": "UCq8oZ_Yd_YzcKBiNv-_gYyA",
+        "name": "Legion of Comics"
+      },
+      {
+        "id": "UC33U6KZ89YMoRroQz_3j-Ow",
+        "name": "Camcorder Nonsense"
+      },
+      {
+        "id": "UCeFXSXdZjAKs49xERPgL8uw",
+        "name": "Phable One Collection Down"
+      }
+    ],
+    "fallbackVideos": [
+      {
+        "id": "lIjOQ4VhTv0",
+        "title": "Omnibus Collector: Modern Comic Book Collected Editions Still Needed"
+      },
+      {
+        "id": "lbLFfB6ywMQ",
+        "title": "Omnibus Collector: Awesome X-Men Announcements"
+      }
+    ]
+  },
+  "romm": {
+    "type": "youtube-api",
+    "channelId": "UCJx5KP-pCUmL9eZUv-mIcNw",
+    "channelName": "Retro Game Corps",
+    "maxResults": 10,
+    "fallbackVideos": [
+      {
+        "id": "HKLc9hG9SzU",
+        "title": "Retro Game Music Compilation"
+      },
+      {
+        "id": "CY0KbjArksg",
+        "title": "Best Gaming Animation Compilation"
+      }
+    ]
   }
+}

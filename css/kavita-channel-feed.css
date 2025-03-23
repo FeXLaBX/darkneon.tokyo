@@ -1,0 +1,429 @@
+/* kavita-channel-feed.css */
+/* Styles for the Kavita YouTube Channel Feed */
+
+/* Kavita Channel Feed Styles */
+.kavita-channel-feed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    border-top: 1px solid var(--matrix-green);
+    z-index: 100;
+    display: none;
+    transform: translateY(100%);
+    transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow: 0 -5px 15px rgba(0, 255, 0, 0.3);
+}
+
+.kavita-channel-feed.visible {
+    transform: translateY(0);
+}
+
+.kavita-channel-feed-title {
+    color: var(--matrix-green);
+    padding: 10px 20px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    font-size: 1rem;
+}
+
+.kavita-channel-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 10px;
+    padding: 15px 20px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--matrix-green) rgba(0, 0, 0, 0.3);
+}
+
+.kavita-channel-list::-webkit-scrollbar {
+    height: 6px;
+}
+
+.kavita-channel-list::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.kavita-channel-list::-webkit-scrollbar-thumb {
+    background-color: var(--matrix-green);
+    border-radius: 3px;
+}
+
+.kavita-channel-item {
+    flex: 0 0 auto;
+    width: 100px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.kavita-channel-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 10px rgba(0, 255, 0, 0.3);
+    border-color: var(--matrix-green);
+}
+
+.kavita-channel-item:hover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 255, 0, 0.2), transparent);
+    pointer-events: none;
+}
+
+.kavita-channel-thumbnail {
+    width: 100%;
+    height: 100px;
+    overflow: hidden;
+}
+
+.kavita-channel-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.kavita-channel-name {
+    padding: 5px;
+    text-align: center;
+    color: white;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.kavita-channel-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #aaa;
+}
+
+.kavita-channel-placeholder-note {
+    color: #ff9800;
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 5px;
+    flex-basis: 100%;
+}
+
+/* Kavita Channel Modal Styles */
+.kavita-channel-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 5000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.kavita-channel-modal.visible {
+    opacity: 1;
+}
+
+.kavita-modal-content {
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    background-color: rgba(0, 0, 0, 0.9);
+    border: 1px solid var(--matrix-green);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 0, 0.1) inset;
+    animation: modal-glow 5s infinite alternate;
+}
+
+@keyframes modal-glow {
+    0% {
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 0, 0.1) inset;
+    }
+    100% {
+        box-shadow: 0 0 25px rgba(0, 255, 0, 0.4), 0 0 50px rgba(0, 255, 0, 0.15) inset;
+    }
+}
+
+.kavita-modal-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+    position: relative;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.9), rgba(0, 255, 0, 0.1), rgba(0, 0, 0, 0.9));
+}
+
+.kavita-modal-title {
+    margin: 0;
+    color: var(--matrix-green);
+    font-size: 1.5rem;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+.kavita-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: var(--matrix-green);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.kavita-modal-close:hover {
+    color: white;
+    transform: scale(1.2);
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+}
+
+.kavita-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--matrix-green) rgba(0, 0, 0, 0.3);
+}
+
+.kavita-modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.kavita-modal-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.kavita-modal-body::-webkit-scrollbar-thumb {
+    background-color: var(--matrix-green);
+    border-radius: 4px;
+}
+
+.kavita-channel-info {
+    display: flex;
+    gap: 15px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+    padding-bottom: 15px;
+}
+
+.kavita-channel-info .kavita-channel-thumbnail {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    overflow: hidden;
+}
+
+.kavita-channel-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.kavita-channel-description {
+    font-size: 0.9rem;
+    color: #ddd;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.kavita-channel-stats {
+    display: flex;
+    gap: 15px;
+    color: #aaa;
+    font-size: 0.8rem;
+    align-items: center;
+}
+
+.kavita-channel-link {
+    margin-left: auto;
+    color: var(--matrix-green);
+    text-decoration: none;
+    padding: 3px 8px;
+    border: 1px solid var(--matrix-green);
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+.kavita-channel-link:hover {
+    background: rgba(0, 255, 0, 0.2);
+    color: white;
+}
+
+.kavita-video-player {
+    width: 100%;
+    margin: 0 auto;
+}
+
+.kavita-video-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    position: relative;
+}
+
+.kavita-video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.kavita-empty-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #aaa;
+    gap: 10px;
+}
+
+.kavita-empty-player-icon {
+    color: var(--matrix-green);
+    opacity: 0.5;
+}
+
+.kavita-videos-header {
+    color: var(--matrix-green);
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.kavita-videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.kavita-video-item {
+    display: flex;
+    gap: 10px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.kavita-video-item:hover {
+    background: rgba(0, 255, 0, 0.1);
+    border-color: var(--matrix-green);
+    transform: translateY(-2px);
+}
+
+.kavita-video-thumbnail {
+    width: 120px;
+    height: 68px; /* 16:9 aspect ratio */
+    flex-shrink: 0;
+    overflow: hidden;
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    position: relative;
+}
+
+.kavita-video-thumbnail::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent, rgba(0, 255, 0, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.kavita-video-item:hover .kavita-video-thumbnail::after {
+    opacity: 1;
+}
+
+.kavita-video-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.kavita-video-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-width: 0; /* Needed for text-overflow to work */
+}
+
+.kavita-video-title {
+    font-size: 0.85rem;
+    line-height: 1.2;
+    color: white;
+    margin-bottom: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.kavita-video-date {
+    font-size: 0.75rem;
+    color: #aaa;
+}
+
+.kavita-error-message {
+    color: #ff6b6b;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 0, 0, 0.1);
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.kavita-error-details {
+    font-size: 0.9rem;
+    color: #ff9999;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .kavita-channel-info {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .kavita-channel-stats {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .kavita-channel-link {
+        margin: 10px auto 0;
+    }
+    
+    .kavita-videos-grid {
+        grid-template-columns: 1fr;
+    }
+}

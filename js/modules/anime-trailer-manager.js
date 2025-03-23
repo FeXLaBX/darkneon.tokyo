@@ -103,8 +103,8 @@ async function loadYouTubeApiKey() {
 
 // Trailer Manager Factory - Creates trailer manager instances for different apps
 export const createTrailerManager = (appName, sourceType) => {
-  // Define sources for different apps
-  const sources = {
+  // Define default sources for different apps (as fallback)
+  const defaultSources = {
     'jellyfin': {
       type: 'jikan',
       endpoint: 'https://api.jikan.moe/v4/top/anime?filter=airing&limit=25'
@@ -122,12 +122,10 @@ export const createTrailerManager = (appName, sourceType) => {
           id: 'lbLFfB6ywMQ',
           title: 'Omnibus Collector: Awesome X-Men Announcements'
         }
-        // Add more fallback videos as needed
       ]
     },
     'romm': {
       type: 'youtube-api',
-      // Replace with your specific channel ID for Romm
       channelId: 'UCJx5KP-pCUmL9eZUv-mIcNw', // Example: Retro Game Corps
       maxResults: 10,
       fallbackVideos: [  // Used if API fails or key isn't available
@@ -139,13 +137,12 @@ export const createTrailerManager = (appName, sourceType) => {
           id: 'CY0KbjArksg',
           title: 'Best Gaming Animation Compilation'
         }
-        // Add more fallback videos as needed
       ]
     }
   };
 
   // If sourceType is provided, override the default
-  const source = sourceType ? { type: sourceType } : sources[appName];
+  let source = sourceType ? { type: sourceType } : defaultSources[appName];
   
   if (!source) {
     console.error(`No source configuration for app: ${appName}`);
@@ -171,7 +168,20 @@ export const createTrailerManager = (appName, sourceType) => {
     async initialize() {
       console.log(`Initializing trailer manager for ${this.appName}`);
       
-      if (this.initialized) return;
+      if (this.initialized) return this;
+      
+      // Try to load configuration from yt-config.json
+      try {
+        const configSource = await this.loadChannelConfig();
+        if (configSource) {
+          console.log(`Loaded channel configuration for ${this.appName} from yt-config.json`);
+          this.sourceConfig = configSource;
+          this.sourceType = configSource.type;
+        }
+      } catch (error) {
+        console.warn(`Error loading channel configuration from yt-config.json: ${error.message}`);
+        console.log('Using default configuration');
+      }
       
       // Fetch trailers based on source type
       if (this.sourceType === 'jikan') {
@@ -182,6 +192,30 @@ export const createTrailerManager = (appName, sourceType) => {
       
       this.initialized = true;
       return this;
+    },
+    
+    // Load channel configuration from yt-config.json
+    async loadChannelConfig() {
+      // Make a request to the yt-config.json file
+      try {
+        const response = await fetch('/youtube/yt-config.json');
+        if (!response.ok) {
+          console.warn('Could not load yt-config.json, falling back to default configuration');
+          return null;
+        }
+        
+        const config = await response.json();
+        
+        // Check if configuration is available for this app
+        if (config && config[this.appName]) {
+          return config[this.appName];
+        }
+        
+        return null;
+      } catch (error) {
+        console.error('Error loading YouTube channel configuration:', error);
+        return null;
+      }
     },
     
     // Fetch YouTube channel videos using the API

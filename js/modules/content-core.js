@@ -1,6 +1,7 @@
-// content-core.js - FIXED VERSION
+// content-core.js - UPDATED with Kavita integration
 import { initializeContentBoxes, showContentBoxes, hideContentBoxes } from './content-box-manager.js';
 import { setupJellyfinAPI } from './jellyfin-api.js';
+import { setupKavitaAPI } from './kavita-api.js'; // Added Kavita API
 import { initializeExternalContent } from './external-content.js';
 import { AppState } from './app-state.js';
 import { EventBus } from './event-bus.js';
@@ -9,7 +10,11 @@ import { LoadingIndicator } from './loading-indicators.js';
 import { PerformanceMonitor } from './performance-monitoring.js';
 import { DebugTools } from './debug-tools.js';
 import './anime-trailer-integration.js';
+import './kavita-trailer-integration.js'; // Added Kavita trailer integration
 import { TMDBIntegration } from './tmdb-integration.js';
+import KavitaIntegration from './kavita-integration.js'; // Added main Kavita integration
+import { MangaComicsNews } from './manga-comics-news.js'; // Added Manga Comics News
+import { MangaComicsCharts } from './manga-comics-charts.js'; // Added Manga Comics Charts
 
 
 console.log("content-core.js is loading...");
@@ -98,12 +103,16 @@ async function initializeContentSystem() {
     console.log("Step 2: Setting up Jellyfin detail structure");
     setupJellyfinDetailStructure();
     
+    // Step 2b: Set up Kavita detail structure (ADDED)
+    console.log("Step 2b: Setting up Kavita detail structure");
+    setupKavitaDetailStructure();
+    
     // Step 3: Set up Jellyfin API
     console.log("Step 3: Setting up Jellyfin API");
     
     // Set a timeout to prevent getting stuck on API setup
-    const setupPromise = setupJellyfinAPI();
-    const timeoutPromise = new Promise((resolve) => {
+    const jellyfinSetupPromise = setupJellyfinAPI();
+    const jellyfinTimeoutPromise = new Promise((resolve) => {
       setTimeout(() => {
         console.warn("Jellyfin API setup timed out, continuing initialization");
         resolve(false);
@@ -111,11 +120,36 @@ async function initializeContentSystem() {
     });
     
     // Wait for setup to complete or timeout to occur
-    await Promise.race([setupPromise, timeoutPromise]);
+    await Promise.race([jellyfinSetupPromise, jellyfinTimeoutPromise]);
+    
+    // Step 3b: Set up Kavita API (ADDED)
+    console.log("Step 3b: Setting up Kavita API");
+    
+    const kavitaSetupPromise = setupKavitaAPI();
+    const kavitaTimeoutPromise = new Promise((resolve) => {
+      setTimeout(() => {
+        console.warn("Kavita API setup timed out, continuing initialization");
+        resolve(false);
+      }, 5000); // 5 second timeout
+    });
+    
+    // Wait for Kavita setup to complete or timeout to occur
+    await Promise.race([kavitaSetupPromise, kavitaTimeoutPromise]);
     
     // Step 4: Initialize external content (movie charts, trailers, news)
     console.log("Step 4: Initializing external content");
     initializeExternalContent();
+    
+    // Step 5: Initialize Manga/Comics News and Charts (ADDED)
+    console.log("Step 5: Initializing Manga & Comics modules");
+    try {
+      await Promise.all([
+        MangaComicsNews.initialize(),
+        MangaComicsCharts.initialize()
+      ]);
+    } catch (e) {
+      console.warn("Error initializing Manga & Comics modules, continuing anyway:", e);
+    }
     
     // Make loadContentForApp function available globally
     window.contentLoader = { 
@@ -183,6 +217,36 @@ function setupJellyfinDetailStructure() {
   }
 }
 
+// Create empty app description for Kavita (ADDED)
+function setupKavitaDetailStructure() {
+  console.log("Setting up Kavita detail structure...");
+  
+  // Get the Kavita detail element
+  const kavitaDetail = document.querySelector('.kavita-detail');
+  if (!kavitaDetail) {
+    console.error("Kavita detail element not found");
+    return;
+  }
+  
+  // Get the detail content element
+  const detailContent = kavitaDetail.querySelector('.detail-content');
+  if (!detailContent) {
+    console.error("Detail content element not found");
+    return;
+  }
+  
+  // Get the app description element
+  const appDescription = detailContent.querySelector('.app-description');
+  if (appDescription) {
+    // Create empty placeholder
+    appDescription.textContent = "";
+    appDescription.classList.add('kavita-placeholder');
+    console.log("Prepared Kavita description placeholder");
+  } else {
+    console.warn("App description element not found for Kavita");
+  }
+}
+
 // Export the global interface for other modules to access
 export function loadContentForApp(appName) {
   console.log(`Loading content for ${appName}...`);
@@ -221,8 +285,45 @@ export function loadContentForApp(appName) {
           }, 1000);
         }
         break;
-      case 'kavita':
-        console.log("Kavita content loading not yet implemented");
+      case 'kavita': // ADDED Kavita case
+        // Use KavitaIntegration if available
+        if (window.KavitaIntegration) {
+          window.KavitaIntegration.loadContentForApp();
+        } else if (window.kavitaAPI) {
+          // Fallback direct API call
+          window.kavitaAPI.loadKavitaContent();
+          
+          // Also load charts and news
+          if (window.MangaComicsCharts) {
+            window.MangaComicsCharts.updateDisplay();
+          }
+          
+          if (window.MangaComicsNews) {
+            window.MangaComicsNews.loadAndDisplay();
+          }
+        } else {
+          console.warn("Kavita API not initialized");
+          
+          // Try to load some basic content anyway
+          setTimeout(() => {
+            // Attempt to initialize the Kavita API again
+            setupKavitaAPI().then(success => {
+              if (success && window.kavitaAPI) {
+                window.kavitaAPI.loadKavitaContent();
+                console.log("Late initialization of Kavita API succeeded");
+                
+                // Also try to load charts and news
+                if (window.MangaComicsCharts) {
+                  window.MangaComicsCharts.updateDisplay();
+                }
+                
+                if (window.MangaComicsNews) {
+                  window.MangaComicsNews.loadAndDisplay();
+                }
+              }
+            });
+          }, 1000);
+        }
         break;
       case 'romm':
         console.log("Romm content loading not yet implemented");

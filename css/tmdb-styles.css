@@ -254,51 +254,17 @@
   border-radius: 4px;
 }
 
-/* Full-width section for overview and metadata */
-.tmdb-full-width-section {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-/* Overview styling */
-.tmdb-overview {
-  line-height: 1.6;
-  color: #ddd;
-  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
-  margin-bottom: 15px;
-  font-size: 0.95rem;
-}
-
-/* Metadata section with lighter font weight */
-.tmdb-meta-full {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px 15px;
-  background: rgba(0, 255, 0, 0.05);
-  padding: 10px;
-  border-radius: 4px;
-  border-left: 2px solid var(--matrix-green);
-  font-weight: 300; /* Lighter font weight */
-  color: #aaa; /* Lighter color */
-}
-
-.tmdb-meta-full strong {
-  color: var(--matrix-green);
-  font-weight: normal; /* Keep headings visible */
-  margin-right: 5px;
-}
-
-/* Container for poster and trailer side by side */
-.tmdb-media-container {
+/* Top section with poster and synopsis text only */
+.tmdb-top-section {
   display: flex;
-  flex-direction: row;
-  gap: 15px;
+  gap: 20px;
+  margin-bottom: 20px;
   width: 100%;
 }
 
-/* Poster container - 1/3 width */
+/* Poster container positioned to the left of synopsis */
 .tmdb-poster-container {
-  width: 33.333%;
+  width: 100px; /* 50% smaller than original 200px */
   flex-shrink: 0;
   border: 1px solid rgba(0, 255, 0, 0.3);
   position: relative;
@@ -323,10 +289,50 @@
   display: block;
 }
 
-/* Trailer container - 2/3 width */
+/* Synopsis text container */
+.tmdb-synopsis-container {
+  flex: 1;
+}
+
+/* Synopsis text styling */
+.tmdb-overview {
+  line-height: 1.6;
+  color: #ddd;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+  font-size: 0.95rem;
+}
+
+/* Metadata section - now below both poster and text */
+.tmdb-meta-section {
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+/* Metadata section with lighter font weight */
+.tmdb-meta-full {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px 15px;
+  background: rgba(0, 255, 0, 0.05);
+  padding: 10px;
+  border-radius: 4px;
+  border-left: 2px solid var(--matrix-green);
+  font-weight: 300; /* Lighter font weight */
+  color: #aaa; /* Lighter color */
+}
+
+.tmdb-meta-full strong {
+  color: var(--matrix-green);
+  font-weight: normal; /* Keep headings visible */
+  margin-right: 5px;
+}
+
+/* Trailer section taking up full width at the bottom */
 .tmdb-trailer-container {
-  width: 66.666%;
+  width: 100%;
   position: relative;
+  margin-top: 15px;
 }
 
 /* Styling for trailer iframe container */
@@ -635,13 +641,14 @@
 
 /* Make sure the modal fits properly on smaller screens */
 @media (max-width: 768px) {
-  .tmdb-media-container {
+  .tmdb-top-section {
     flex-direction: column;
   }
   
-  .tmdb-poster-container,
-  .tmdb-trailer-container {
+  .tmdb-poster-container {
     width: 100%;
+    max-width: 100px; /* Updated to match our new smaller size */
+    margin: 0 auto 15px auto;
   }
   
   .tmdb-meta-full {

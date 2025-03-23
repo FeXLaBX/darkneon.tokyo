@@ -356,17 +356,27 @@ async handleItemClick(event) {
             ${details.originalTitle !== details.title ? `<h4 class="original-title">${details.originalTitle}</h4>` : ''}
           </div>
           <div class="tmdb-modal-body">
-            <!-- Full-width overview and metadata section -->
-            <div class="tmdb-full-width-section">
-              <!-- Overview section -->
-              <div class="tmdb-overview">${details.overview || 'No overview available.'}</div>
+            <!-- Top section with poster and synopsis text side by side -->
+            <div class="tmdb-top-section">
+              <!-- Poster container positioned to the left of synopsis -->
+              <div class="tmdb-poster-container">
+                <img src="${posterUrl}" alt="${details.title}"
+                  onerror="this.src='${TMDBAPI.getFallbackPosterUrl(details.title)}'">
+              </div>
               
-              <!-- Metadata section with lighter font -->
+              <!-- Synopsis text container -->
+              <div class="tmdb-synopsis-container">
+                <div class="tmdb-overview">${details.overview || 'No overview available.'}</div>
+              </div>
+            </div>
+            
+            <!-- Metadata section - now below both poster and text -->
+            <div class="tmdb-meta-section">
               <div class="tmdb-meta-full">
                 <div><strong>Rating:</strong> ${details.voteAverage?.toFixed(1) || 'N/A'}/10</div>
                 <div><strong>Release Date:</strong> ${formattedDate}</div>
-                ${type === 'movie' ? 
-                  `<div><strong>Runtime:</strong> ${details.runtime ? `${details.runtime} min` : 'N/A'}</div>` : 
+                ${type === 'movie' ?
+                  `<div><strong>Runtime:</strong> ${details.runtime ? `${details.runtime} min` : 'N/A'}</div>` :
                   `<div><strong>Seasons:</strong> ${details.numberOfSeasons || 'N/A'}</div>
                    <div><strong>Episodes:</strong> ${details.numberOfEpisodes || 'N/A'}</div>`
                 }
@@ -374,16 +384,8 @@ async handleItemClick(event) {
               </div>
             </div>
             
-            <!-- Side-by-side poster and trailer container -->
-            <div class="tmdb-media-container">
-              <!-- Poster container - 1/3 width -->
-              <div class="tmdb-poster-container">
-                <img src="${posterUrl}" alt="${details.title}" 
-                  onerror="this.src='${TMDBAPI.getFallbackPosterUrl(details.title)}'">
-              </div>
-              
-              <!-- Trailer container - 2/3 width -->
-              <div class="tmdb-trailer-container">
+            <!-- Trailer container - full width -->
+            <div class="tmdb-trailer-container">
                 ${details.trailer && details.trailer.key ? 
                   `<div class="tmdb-trailer">
                     <iframe 
